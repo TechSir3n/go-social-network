@@ -1,0 +1,54 @@
+
+h1{
+  font-size:24px;
+  font-weight: 400;
+   position: relative;
+  margin-top: 50px;
+}
+
+input[type="text"], input[type="email"],input[type="password"]{
+  border-width: 0;
+  outline: none;
+  margin: 0;
+  width: 100%;
+  padding: 10px 15px;
+  background: #e6e6e6;
+}
+
+input[type="text"]:focus, input[type="email"]:focus {
+  box-shadow: inset 0 0 0 2px rgba(0,0,0,.2);
+}
+
+form {
+  background: white;
+  float: left;
+  width: calc(100% - 240px);
+  padding: 30px;
+  border-radius: 0 20px 20px 0;
+  color: #7b7b7b; 
+}
+
+.form-wrap:after, form div:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+form div {
+  margin-bottom: 15px;
+  position: relative;
+}
+
+
+button {
+  padding: 10px 0;
+  border-width: 0;
+  display: block;
+  width: 120px;
+  margin: 25px auto 0;
+  background: #60e6c5;
+  color: white;
+  font-size: 14px;
+  outline: none;
+  text-transform: uppercase;
+}

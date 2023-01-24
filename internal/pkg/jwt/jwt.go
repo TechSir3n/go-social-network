@@ -1,0 +1,8 @@
+package jwt 
+
+
+
+
+func GenerageJWT(){
+
+}
