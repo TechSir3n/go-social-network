@@ -1,11 +1,13 @@
 package entity 
 
-import "github.com/jackc/pgx/v5"
+import "database/sql"
 
 type User struct {
-    DB *pgx.Conn
+    DB *sql.DB
 	ID       string
-	Email    string `json:"Email"`
-	Password string `json:"Password"`
+	Name     string          `json:"Name"`
+	Email    string 		 `json:"Email"`
+	Password string 		 `json:"Password"`
+	ConfirmPassword string   `json:"ConfirmPassword"`
 }
 

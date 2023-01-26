@@ -17,7 +17,11 @@ database:
   image: postgres:alpine
   restart: always
   env_file:
-    - .env
+    - POSTGRES_NAME=${DB_NAME}
+    - POSTGRES_USER=${DB_USER}
+    - POSTGRES_PORT=${DB_PORT}
+    - POSTGRES_PASSWORD=${DB_PASSWORD}
+    - POSTGRES_HOST=$[DB_HOST}
   ports:
     - "5432:5432"
   volumes:

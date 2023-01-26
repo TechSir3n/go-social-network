@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-
-<html>
+<html lang="en">
 
 <head>
     <meta charset="utf-8">
@@ -8,37 +7,40 @@
     <link rel="stylesheet" type="text/css" href="./css/singup.css">
     <div class="form-wrap">
         <div class="profile"> <img src="https://html5book.ru/wp-content/uploads/2016/10/profile-image.png"></div>
-        <h1>Registration</h1>
     </div>
 </head>
 
 <body>
-
-    <form method="POST" action="/">
-        <div>
+    <form method="POST" action="/registration">
+        <h1>Registration</h1>
+        <h4>Please fill in this form to create an account.</h4>
+        
+        <div class="container">
             <label><b>Name</b></label>
-            <input type="text" required placeholder="Enter Name">
-        </div>
+            <input type="text" name="name" required placeholder="Enter Name">
 
-        <div>
+            <br><br>
+
             <label><b>Email</b></label>
-            <input type="email" required placeholder="Enter Email">
-        </div>
+            <input type="email" name="email" required placeholder="Enter Email">
 
-        <div>
+            <br><br>
+
             <label><b>Password</b></label>
-            <input type="password" required placeholder="Enter Password">
-        </div>
+            <input type="password" name="password" required placeholder="Enter Password">
 
-        <div>
+            <br><br>
+
             <label><b>Repeat Password</b></label>
-            <input type="password" required placeholder="Repeat Password">
-        </div>
+            <input type="password" name="confirm_pswd" required placeholder="Repeat Password">
 
-        <button type="" submit>Send</button>
+            <br><br>
+
+            <button type="submit" height=90><strong>Sign Up</strong></button>
+            <span class="psw"><a href="/login"><strong> Already Have an account ? </strong></a></span>
+        </div>
 
     </form>
-
 </body>
 
 </html>

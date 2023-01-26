@@ -3,21 +3,20 @@ package config
 import (
 	"context"
 	"fmt"
-	"log"
-	"os"
-
 	"github.com/jackc/pgx/v5"
+	"log"
+		"os"
 	"github.com/joho/godotenv"
-	_ "github.com/lib/pq"
 )
 
-func ConnectDB() *pgx.Conn {
 
-   func() {
-		if err := godotenv.Load(); err != nil {
-			log.Fatal("Nof Found .env file,err: ", err)
-		}
-	}()
+func Init() {
+	if err := godotenv.Load(".env"); err != nil {
+			log.Fatal("Nof Found .env file")
+	}
+}
+
+func ConnectDB() *pgx.Conn {
 
 	host := os.Getenv("DB_HOST")
 	password := os.Getenv("DB_PASSWORD")
@@ -26,18 +25,17 @@ func ConnectDB() *pgx.Conn {
 	username := os.Getenv("DB_USER")
 
 	psqlInfo := fmt.Sprintf("host=%s port=%s user=%s "+
-		"password=%s dbname=%s sslmode=disable",
-		host, port, username, password, dbname)
+	"password=%s dbname=%s sslmode=disable",
+	host, port, username, password, dbname)
 
-	conn, err := pgx.Connect(context.Background(), psqlInfo)
-
+	conn, err := pgx.Connect(context.Background(),psqlInfo)
 	if err != nil {
-		log.Fatal("Connect err: ", err)
+		log.Fatal("Failed open database: ", err)
 	}
 
-	fmt.Println("Database connected")
-
 	defer conn.Close(context.Background())
+
+	fmt.Println("Database connected")
 
 	return conn
 }

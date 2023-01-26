@@ -1,37 +1,47 @@
-
-h1{
-  font-size:24px;
-  font-weight: 400;
-   position: relative;
-  margin-top: 50px;
+h1 {
+  text-align: center;
 }
 
-input[type="text"], input[type="email"],input[type="password"]{
-  border-width: 0;
-  outline: none;
-  margin: 0;
+
+input[type="text"],
+input[type="email"],
+input[type="password"] {
   width: 100%;
-  padding: 10px 15px;
-  background: #e6e6e6;
+  margin: 10px 0;
+  border-radius: 5px;
+  padding: 15px 18px;
+  box-sizing: border-box;
 }
 
-input[type="text"]:focus, input[type="email"]:focus {
-  box-shadow: inset 0 0 0 2px rgba(0,0,0,.2);
+input {
+  width: 100%;
+  margin: 10px 0;
+  border-radius: 5px;
+  padding: 15px 18px;
+  box-sizing: border-box;
 }
 
 form {
-  background: white;
-  float: left;
-  width: calc(100% - 240px);
-  padding: 30px;
-  border-radius: 0 20px 20px 0;
-  color: #7b7b7b; 
+  width: 35rem;
+  margin: auto;
+  color: whitesmoke;
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  background-color: rgba(11, 15, 13, 0.582);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.125);
 }
 
-.form-wrap:after, form div:after {
+.form-wrap:after,
+form div:after {
   content: "";
   display: table;
   clear: both;
+}
+
+span.psw {
+  float: right;
+  padding-top: 16px;
 }
 
 form div {
@@ -39,16 +49,24 @@ form div {
   position: relative;
 }
 
+body {
+  font-family: Arial;
+  background: -webkit-linear-gradient(to right, #155799, #159957);
+  background: linear-gradient(to right, #155799, #159957);
+  color: whitesmoke;
+}
 
 button {
-  padding: 10px 0;
-  border-width: 0;
-  display: block;
-  width: 120px;
-  margin: 25px auto 0;
-  background: #60e6c5;
+  background-color: #030804;
   color: white;
-  font-size: 14px;
-  outline: none;
-  text-transform: uppercase;
+  padding: 14px 20px;
+  border-radius: 5px;
+  margin: 7px 0;
+  width: 100%;
+  font-size: 18px;
+}
+
+button:hover {
+  opacity: 0.6;
+  cursor: pointer;
 }
