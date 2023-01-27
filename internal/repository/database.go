@@ -7,11 +7,12 @@ import (
 	"log"
 	"social_network/internal/config"
 	"social_network/internal/domain/entities"
+	"time"
 )
 
 // CRUD operations
 
-type UserService interface {
+type UserRepository interface {
 	CreateUser(ctx context.Context, user entity.User) (entity.User, error)
 	DeleteUser(ctx context.Context, id string) (entity.User, error)
 	UpdateUser(ctx context.Context, user entity.User) (entity.User, error)
@@ -21,16 +22,26 @@ type UserService interface {
 	GetUserByEmail(ctx context.Context, email string) (entity.User, error)
 }
 
-var DB = config.ConnectDB()
+type AuthService struct {
+	AuthService UserRepository
+}
+
+func NewAuthService(authService UserRepository) *AuthService {
+	return &AuthService{AuthService:authService}
+}
 
 func CreateUser(ctx context.Context, user entity.User) (entity.User, error) {
+	user.DB = config.ConnectDB()
 
-	sqlInsert := `INSERT INTO users (email,password,namev,confirm_psdw) 
-    VALUES ($1,$2,$3,$4)`
-	_, err := DB.Exec(ctx, sqlInsert, user.Email, user.Password, user.Name, user.ConfirmPassword)
+	user.CreatedAt = time.Now().Format(time.ANSIC)
+
+	sqlInsert := `INSERT INTO users (email,password,name,confirm_password,created_at,updated_at) 
+    VALUES ($1,$2,$3,$4,$5,$6)`
+	_, err := user.DB.Exec(ctx, sqlInsert, user.Email, user.Password, user.Name, user.ConfirmPassword,
+		user.CreatedAt, user.UpdatedAt)
 
 	if err != nil {
-		log.Fatal("Unable to insert data into database")
+		log.Printf("Unable to insert data into database: %v", err)
 	}
 
 	return entity.User{
@@ -39,8 +50,10 @@ func CreateUser(ctx context.Context, user entity.User) (entity.User, error) {
 }
 
 func DeleteUser(ctx context.Context, id string) (entity.User, error) {
+	var user entity.User
+	user.DB = config.ConnectDB()
 	sqlDelete := `DELETE FROM users WHERE id =$1`
-	_, err := DB.Exec(ctx, sqlDelete, id)
+	_, err := user.DB.Exec(ctx, sqlDelete, id)
 
 	if err != nil {
 		errors.Wrap(err, "Failed to delete user,incorrect id or user with such id doesn't exists")
@@ -53,7 +66,11 @@ func DeleteUser(ctx context.Context, id string) (entity.User, error) {
 
 func UpdateUser(ctx context.Context, user entity.User) (entity.User, error) {
 	// need to end a bit later
-	_, err := DB.Exec(ctx, "UPDATE users SET email=$1,password=$2 WHERE email")
+	sqlUpdate := `UPDATE users SET email=$1,password=$2 WHERE email`
+
+	user.UpdatedAt = time.Now().Format(time.ANSIC)
+
+	_,err:=user.DB.Exec(ctx,sqlUpdate) // do 
 
 	if err != nil {
 		errors.Wrap(err, "Failed to update user,incorrect enter data")
@@ -68,7 +85,7 @@ func UpdateUser(ctx context.Context, user entity.User) (entity.User, error) {
 
 func GetUser(ctx context.Context) ([]entity.User, error) {
 	var user entity.User
-	rows, err := DB.Query(ctx, "SELECT email,name,password,confirm_psdw FROM users")
+	rows, err := user.DB.Query(ctx, "SELECT email,name,password,confirm_password FROM users")
 
 	if err != nil {
 		errors.Wrap(err, "Failed to get some data from the database")
@@ -96,7 +113,7 @@ func GetUser(ctx context.Context) ([]entity.User, error) {
 
 func GetUserByID(ctx context.Context, id string) (entity.User, error) {
 	var user entity.User
-	rows, err := DB.Query(ctx, "SELECT * FROM users WHERE id_user=$1", id)
+	rows, err := user.DB.Query(ctx, "SELECT * FROM users WHERE id_user=$1", id)
 
 	if err != nil {
 		errors.Wrap(err, "Couldn't be found data with such id into database")
@@ -119,7 +136,7 @@ func GetUserByID(ctx context.Context, id string) (entity.User, error) {
 
 func GetUserByEmail(ctx context.Context, email string) (entity.User, error) {
 	var user entity.User
-	rows, err := DB.Query(ctx, "SELECT * FROM users WHERE email=$1", email)
+	rows, err := user.DB.Query(ctx, "SELECT * FROM users WHERE email=$1", email)
 
 	if err != nil {
 		errors.Wrap(err, "Couldn't be found data with such id into database")

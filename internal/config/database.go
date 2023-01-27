@@ -3,21 +3,20 @@ package config
 import (
 	"context"
 	"fmt"
-	"github.com/jackc/pgx/v5"
 	"log"
-		"os"
+	"os"
+	"github.com/jackc/pgx/v5"
 	"github.com/joho/godotenv"
+	_ "github.com/lib/pq"
 )
 
-
-func Init() {
-	if err := godotenv.Load(".env"); err != nil {
-			log.Fatal("Nof Found .env file")
+func init() {
+	if err := godotenv.Load("C:/Users/Ruslan/Desktop/go-social-network/.env"); err != nil {
+		log.Print("No .env file found")
 	}
 }
 
 func ConnectDB() *pgx.Conn {
-
 	host := os.Getenv("DB_HOST")
 	password := os.Getenv("DB_PASSWORD")
 	dbname := os.Getenv("DB_NAME")
@@ -32,8 +31,6 @@ func ConnectDB() *pgx.Conn {
 	if err != nil {
 		log.Fatal("Failed open database: ", err)
 	}
-
-	defer conn.Close(context.Background())
 
 	fmt.Println("Database connected")
 

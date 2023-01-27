@@ -5,4 +5,8 @@ CREATE TABLE Users(
     Name VARCHAR(249) NOT NULL UNIQUE,
     Email VARCHAR(249) NOT NULL UNIQUE,
     Password BIGINT NOT NULL,
+    Created_at TIMESTAMP,
+    Update_at TIMESTAMP ,
 )
+
+

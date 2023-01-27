@@ -2,50 +2,71 @@ package v1
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"net/http"
+	"os"
+
 	entity "social_network/internal/domain/entities"
-	"social_network/internal/repository"
+	DB "social_network/internal/repository"
 	"social_network/utils"
+
+	"github.com/pkg/errors"
 )
+
 
 func Login(wrt http.ResponseWriter, req *http.Request) {
 	wrt.Header().Set("Content-Type", "text/html; charset=utf-8")
+
+}
+
+func Logout(wrt http.ResponseWriter, req *http.Request) {
+	wrt.Header().Set("Content-Type", "text/html; charset=utf-8")
+
 }
 
 func SignUp(wrt http.ResponseWriter, req *http.Request) {
 	if req.Method == http.MethodPost {
 
-		if err := req.ParseForm(); err != nil {
-			fmt.Fprintf(wrt, "ParseForm()err:%v", err)
-			return
-		}
-
 		name := req.FormValue("name")
 		email := req.FormValue("email")
 		password := req.FormValue("password")
 		confirm_pswd := req.FormValue("confirm_pswd") // password to confirm
-		fmt.Println(name, email, password, confirm_pswd)
+
+		if !utils.IsName(name) {
+			utils.ExecTemplate(wrt, "C:/Users/Ruslan/Desktop/go-social-network/static/signup.html", "Wrong name entered,or user with so name already exists")
+			os.Exit(1)
+		} else if !utils.IsEmail(email) {
+			utils.ExecTemplate(wrt, "C:/Users/Ruslan/Desktop/go-social-network/static/signup.html", "Wrong email entered,or so email already exists")
+			os.Exit(1)
+		} else if !utils.IsPassword(password) {
+			utils.ExecTemplate(wrt, "C:/Users/Ruslan/Desktop/go-social-network/static/signup.html", "Wrong password entered")
+			os.Exit(1)
+		}
 
 		user := entity.User{}
+		hash, err := utils.HashPassword(user.Password)
+
+		if err != nil {
+			errors.Wrap(err, ": Failed hash password")
+		}
+
 		user.Name = name
-		user.Password = password
+		user.Password = string(hash)
 		user.Email = email
 		user.ConfirmPassword = confirm_pswd
 
-		if password != confirm_pswd {
+		if password == "" && password != confirm_pswd {
 			wrt.WriteHeader(http.StatusNotFound)
 			utils.ExecTemplate(wrt, "C:/Users/Ruslan/Desktop/go-social-network/static/signup.html", "Password do not match")
-			return
+			os.Exit(1)
 		}
 
 		ctx := context.Background()
-		id_user, err := database.CreateUser(ctx, user)
+		id_user, err := DB.CreateUser(ctx, user) 
 
 		if err != nil {
-			utils.ExecTemplate(wrt, "C:/Users/Ruslan/Desktop/go-social-network/static/signup.html", "Failed to Create User")
-			return
+			utils.ExecTemplate(wrt, "C:/Users/Ruslan/Desktop/go-social-network/static/signup.html", err)
+			os.Exit(1)
 		}
 
 		log.Printf("User success created: %s", id_user.ID)
@@ -54,6 +75,6 @@ func SignUp(wrt http.ResponseWriter, req *http.Request) {
 	}
 
 	utils.ExecTemplate(wrt, "C:/Users/Ruslan/Desktop/go-social-network/static/signup.html", nil)
+
 }
 
-//func Auth(next http.HandlerFunc) http.HandlerFunc {}

@@ -1,22 +1,26 @@
 package main
 
 import (
-	_ "github.com/joho/godotenv"
 	"log"
 	"net/http"
 	"os"
-	"social_network/internal/api/v2"
-	"social_network/internal/config"
+
+	_ "github.com/lib/pq"
+	"social_network/internal/api/router"
 )
 
 func main() {
-	config.ConnectDB()
 	port := os.Getenv("PORT")
 
 	if port == "" {
 		port = "8080"
 	}
 
-	router := v2.InitRouter()
-	log.Fatal(http.ListenAndServe(":"+port, router))
+	staticDir := "/static/"
+	router.APIRouter.
+		PathPrefix(staticDir).
+		Handler(http.StripPrefix(staticDir, http.FileServer(http.Dir("."+staticDir))))
+
+
+	log.Fatal(http.ListenAndServe(":"+port, router.APIRouter))
 }
