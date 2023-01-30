@@ -7,6 +7,8 @@ import (
 	templ "html/template"
 	"log"
 	"net/http"
+
+	"social_network/internal/api/v1/models"
 	"social_network/internal/repository"
 	"unicode"
 )
@@ -24,13 +26,13 @@ func ExecTemplate(w http.ResponseWriter, template string, data interface{}) {
 	}
 }
 
-func HashPassword(password string) ([]byte, error) {
-	bytes, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
-	return bytes, err
+func HashPassword(password string) (string, error) {
+	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
+	return string(bytes), err
 }
 
 func CheckPasswordHash(password, hash string) bool {
-	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+	err := bcrypt.CompareHashAndPassword([]byte(password), []byte(hash))
 	return err == nil
 }
 
@@ -45,20 +47,6 @@ func IsName(name string) bool {
 		IsTrue = false
 	}
 
-	nm, err := database.GetUser(context.Background())
-
-	if err != nil {
-		errors.Wrap(err, "Unable to get data from database")
-	}
-
-	for _, iname := range nm {
-		if iname.Name == name {
-			IsTrue = false
-		} else {
-			IsTrue = true
-		}
-	}
-
 	return IsTrue
 }
 
@@ -66,7 +54,7 @@ func IsPassword(password string) bool {
 	fchar := password[0]
 	sz := len(password)
 
-	if sz > 8 && unicode.IsUpper(rune(fchar)) {
+	if sz > 7 && unicode.IsUpper(rune(fchar)) {
 		return true
 	} else {
 		return false
@@ -75,10 +63,11 @@ func IsPassword(password string) bool {
 
 func IsEmail(email string) bool {
 	login, err := database.GetUser(context.Background())
-	var IsTrue bool = false
+	var IsTrue bool = true
 
 	if err != nil {
 		errors.Wrap(err, "unable to get data from database")
+		IsTrue = false
 	}
 
 	for _, eml := range login {
@@ -88,4 +77,18 @@ func IsEmail(email string) bool {
 	}
 
 	return IsTrue
+}
+
+func Validate(user *models.User) error {
+	if user.Name == "" {
+		return errors.New("name is empty")
+	} else if user.Email == "" {
+		return errors.New("email is empty")
+	} else if user.Password == "" {
+		return errors.New("passowrd is empty")
+	} else if user.ConfirmPassword == "" {
+		return errors.New("confirm Password is empty")
+	} else {
+		return nil
+	}
 }
