@@ -1,5 +1,6 @@
 package models
 
+
 type SignInRequest struct {
 	Username string `json:"username"`
 	Email    string `json:"email"`
@@ -13,3 +14,5 @@ type SignInResponse struct {
 	Email       string `json:"email"`
 	TokenString string `json:"token"`
 }
+
+

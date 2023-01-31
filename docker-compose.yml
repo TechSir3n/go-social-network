@@ -1,33 +1,25 @@
-version: "3.8"
-
+version: "3.9"
 services:
   social_network:
-    build:
-    context: .
-    dockerfile: Dockerfile
-    env_file: .env
+    build: 
+     context: .
+     dockerfile: Dockerfile
+    ports:
+      - "8000:8080"
     depends_on:
       - database
-    networks:
-      - default
+    env_file: .env
+    container_name: social_network
+
+  database:
+    image: postgres:latest
+    restart: always 
+    environment:
+      - POSTGRES_NAME=${DB_NAME}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PORT=${DB_PORT}
+      - POSTGRES_PASSWORD=${DB_PASSWORD:? database password not set}
+      - POSTGRES_HOST=${DB_HOST}
     ports:
-      - "8080:8080"
-
-database:
-  image: postgres:alpine
-  restart: always
-  env_file:
-    - POSTGRES_NAME=${DB_NAME}
-    - POSTGRES_USER=${DB_USER}
-    - POSTGRES_PORT=${DB_PORT}
-    - POSTGRES_PASSWORD=${DB_PASSWORD}
-    - POSTGRES_HOST=$[DB_HOST}
-  ports:
-    - "5432:5432"
-  volumes:
-    - data: /postgresql/data
-
-volumes:
-  data:
-
-
+      - "5432:5432"
+    command: social-network --insecure

@@ -155,7 +155,7 @@ func GetUserByEmail(ctx context.Context, email string) (models.User, error) {
 	}
 
 	return models.User{
-		ID:       user.ID,
+		Name:     user.Name,
 		Email:    user.Email,
 		Password: user.Password,
 	}, nil

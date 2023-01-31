@@ -9,6 +9,7 @@ import (
 	"social_network/internal/pkg/jwt"
 	DB "social_network/internal/repository"
 	"social_network/utils"
+	"time"
 )
 
 func Login(wrt http.ResponseWriter, req *http.Request) {
@@ -32,8 +33,8 @@ func Login(wrt http.ResponseWriter, req *http.Request) {
 			utils.ExecTemplate(wrt, "C:/Users/Ruslan/Desktop/go-social-network/static/login.html", "User not found")
 			return
 		}
-		compare := utils.CheckPasswordHash(user.Password, apiUser.Password)
 
+		compare := utils.CheckPasswordHash(user.Password, apiUser.Password)
 		if !compare {
 			wrt.WriteHeader(http.StatusForbidden)
 			utils.ExecTemplate(wrt, "C:/Users/Ruslan/Desktop/go-social-network/static/login.html", "password is wrong")
@@ -41,7 +42,17 @@ func Login(wrt http.ResponseWriter, req *http.Request) {
 			return
 		}
 
-		validToken, err := jwt.GenerateJWT(apiUser.Email, apiUser.Role)
+		validToken, err := jwt.GenerateJWT(user)
+
+		expires := time.Now().AddDate(1, 0, 0)
+		cookie := http.Cookie{
+			Name:     "Access_Token",
+			Value:    validToken,
+			HttpOnly: true,
+			Expires:  expires,
+		}
+
+		http.SetCookie(wrt, &cookie)
 
 		if err != nil {
 			log.Println(err, ": Invalid Token")
@@ -49,21 +60,35 @@ func Login(wrt http.ResponseWriter, req *http.Request) {
 			return
 		}
 
-		var token models.SignInResponse
-		token.Role = apiUser.Role
-		token.Email = apiUser.Email
-		token.AccessToken = validToken
-
-		http.Redirect(wrt, req, "/registration", http.StatusSeeOther)
+		http.Redirect(wrt, req, "/user", http.StatusSeeOther)
 	}
 
 	utils.ExecTemplate(wrt, "C:/Users/Ruslan/Desktop/go-social-network/static/login.html", nil)
 
 }
 
-func Logout(wrt http.ResponseWriter, req *http.Request) {
-	wrt.Header().Set("Content-Type", "text/html; charset=utf-8")
+func Authentication(endPoint http.HandlerFunc) http.HandlerFunc {
+	return func(wrt http.ResponseWriter, req *http.Request) {
+		wrt.Header().Set("Content-Type", "text/html; charset=utf-8")
 
+		cookie, err := req.Cookie("Access_Token")
+		token := cookie.Value
+
+		if err != nil {
+			log.Println(err, "Not found name cookie")
+			return
+		}
+
+		value, err := jwt.IsValidToken(token)
+		fmt.Println("Value: ", value)
+
+		if err != nil {
+			http.Error(wrt, "Token isn't valid", http.StatusUnauthorized)
+			return
+		}
+
+		endPoint(wrt, req)
+	}
 }
 
 func SignUp(wrt http.ResponseWriter, req *http.Request) {
@@ -120,6 +145,11 @@ func SignUp(wrt http.ResponseWriter, req *http.Request) {
 	utils.ExecTemplate(wrt, "C:/Users/Ruslan/Desktop/go-social-network/static/signup.html", nil)
 }
 
-func ResetPassword(wrt http.ResponseWriter, req *http.Request) {
+func Logout(wrt http.ResponseWriter, req *http.Request) {
 
+	http.Redirect(wrt, req, "/", http.StatusSeeOther)
+}
+
+func ResetPassword(wrt http.ResponseWriter, req *http.Request) {
+	wrt.Write([]byte("Hello i am rest-server"))
 }

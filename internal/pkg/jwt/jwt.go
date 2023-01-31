@@ -1,33 +1,59 @@
 package jwt
 
 import (
-	"fmt"
+	"log"
 	"os"
+	"social_network/internal/api/v1/models"
 	_ "social_network/internal/config"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
 )
 
-var JWTSecret = os.Getenv("SECKET_KEY")
+type Claims struct { // it's custom paylod in jwt token
+	Email    string `json:"Email"`
+	Name     string `json:"Name"`
+	Password string `json:"Password"`
+	jwt.StandardClaims
+}
 
-func GenerateJWT(email, role string) (string, error) {
-	var mySigningKey = []byte(JWTSecret)
-	token := jwt.New(jwt.SigningMethodHS256)
-	claims := token.Claims.(jwt.MapClaims)
+func GenerateJWT(user models.User) (string, error) {
+	expirationTime := time.Now().Add(30 * time.Minute)
+	claims := &Claims{
+		Email:    user.Email,
+		Name:     user.Name,
+		Password: user.Password,
+		StandardClaims: jwt.StandardClaims{
+			ExpiresAt: expirationTime.Unix(),
+		},
+	}
 
-	claims["authorized"] = true
-	claims["email"] = email
-	claims["role"] = role
-	claims["exp"] = time.Now().Add(time.Minute * 15).Unix()
-
-	tokenString, err := token.SignedString(mySigningKey)
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	tokenString, err := token.SignedString([]byte(os.Getenv("SECKET_KEY")))
 
 	if err != nil {
-		fmt.Errorf("Something Went Wrong: %s", err.Error())
-		return "", err
+		log.Println(err.Error())
+		return "", nil
 	}
+
 	return tokenString, nil
 }
 
-//func IsValidToken(token string) bool{}
+func IsValidToken(tokenStr string) (*jwt.Token, error) {
+	claims := &Claims{}
+	token, err := jwt.ParseWithClaims(tokenStr, claims, func(t *jwt.Token) (interface{}, error) {
+		return []byte(os.Getenv("SECKET_KEY")), nil
+	})
+
+	if err != nil {
+		log.Println(err, " :Invalid Authorization")
+		return nil, err
+	}
+
+	if !token.Valid {
+		log.Println(err, " :Invalid Token")
+		return nil, err
+	}
+
+	return token, err
+}
