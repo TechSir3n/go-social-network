@@ -69,17 +69,17 @@ func DeleteUser(ctx context.Context, id string) (models.User, error) {
 }
 
 func UpdateUser(ctx context.Context, user models.User) (models.User, error) {
-	// need to end a bit later
-	sqlUpdate := `UPDATE users SET email=$1,password=$2 WHERE email`
 	user.UpdatedAt = time.Now().Format(time.ANSIC)
-	_, err := user.DB.Exec(ctx, sqlUpdate) // do
+	user.DB = config.ConnectDB()
+	sqlUpdate := `UPDATE users SET password=$1 WHERE email=$2`
+	_, err := user.DB.Exec(ctx, sqlUpdate, user.Password, user.Email)
 
 	if err != nil {
 		errors.Wrap(err, "Failed to update user,incorrect enter data")
+		return models.User{}, err
 	}
 
 	return models.User{
-		ID:       user.ID,
 		Email:    user.Email,
 		Password: user.Password,
 	}, nil

@@ -6,10 +6,11 @@ import (
 	"log"
 	"net/http"
 	"social_network/internal/api/v1/models"
+	"social_network/internal/domain/v2"
 	"social_network/internal/pkg/jwt"
 	DB "social_network/internal/repository"
+	database "social_network/internal/repository"
 	"social_network/utils"
-	"time"
 )
 
 func Login(wrt http.ResponseWriter, req *http.Request) {
@@ -44,15 +45,7 @@ func Login(wrt http.ResponseWriter, req *http.Request) {
 
 		validToken, err := jwt.GenerateJWT(user)
 
-		expires := time.Now().AddDate(1, 0, 0)
-		cookie := http.Cookie{
-			Name:     "Access_Token",
-			Value:    validToken,
-			HttpOnly: true,
-			Expires:  expires,
-		}
-
-		http.SetCookie(wrt, &cookie)
+		v2.SetCookie(wrt, validToken) // set cookie http.Cookie(...)
 
 		if err != nil {
 			log.Println(err, ": Invalid Token")
@@ -146,10 +139,52 @@ func SignUp(wrt http.ResponseWriter, req *http.Request) {
 }
 
 func Logout(wrt http.ResponseWriter, req *http.Request) {
-
+	v2.ClearCookie(wrt)
 	http.Redirect(wrt, req, "/", http.StatusSeeOther)
 }
 
 func ResetPassword(wrt http.ResponseWriter, req *http.Request) {
-	wrt.Write([]byte("Hello i am rest-server"))
+	wrt.Header().Set("Content-Type", "text/html; charset=utf-8")
+	if req.Method == http.MethodPost {
+		email := req.FormValue("email")
+		password := req.FormValue("password")
+
+		if email == "" && password == "" {
+			http.Error(wrt, "Data claims is empty", http.StatusBadRequest)
+			log.Println("Data from form is empty")
+			return
+		}
+
+		ctx := context.Background()
+		user, err := database.GetUserByEmail(ctx, email)
+
+		if err != nil {
+			log.Println(err, "Failed to found user with so email address")
+			return
+		}
+
+		hash, err := utils.HashPassword(password)
+
+		if err != nil {
+			log.Println(err, ":Failed to hashing password")
+			return
+		} else if user.Password == password {
+			http.Error(wrt, "Prevent changing the password to the old password", http.StatusBadRequest)
+			return
+		}
+
+		user.Password = hash
+		user.Email = email
+		updated_data, err := database.UpdateUser(ctx, user)
+
+		if err != nil {
+			log.Println(err, "Failed to update password's user")
+			return
+		}
+
+		fmt.Println(updated_data.Email, " :Success updated !")
+		http.Redirect(wrt, req, "/login", http.StatusSeeOther)
+	}
+
+	utils.ExecTemplate(wrt, "C:/Users/Ruslan/Desktop/go-social-network/static/resetpassword.html", nil)
 }
