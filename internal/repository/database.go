@@ -2,12 +2,14 @@ package database
 
 import (
 	"context"
-	_ "github.com/lib/pq"
-	"github.com/pkg/errors"
 	"log"
 	"social_network/internal/api/v1/models"
 	"social_network/internal/config"
+	"social_network/internal/pkg/jwt"
 	"time"
+
+	_ "github.com/lib/pq"
+	"github.com/pkg/errors"
 )
 
 type UserRepository interface {
@@ -46,6 +48,7 @@ func CreateUser(ctx context.Context, user models.User) (models.User, error) {
 
 	if err != nil {
 		errors.Wrap(err, "Failed to insert data into database")
+		return models.User{}, err
 	}
 
 	return models.User{
@@ -159,4 +162,20 @@ func GetUserByEmail(ctx context.Context, email string) (models.User, error) {
 		Email:    user.Email,
 		Password: user.Password,
 	}, nil
+}
+
+func CreateSessions(ctx context.Context, payload *jwt.PayloadJWT) error {
+	db := config.ConnectDB()
+
+	insertSession := `INSERT INTO session (expiresrefresh,refreshuid,refreshtoken)
+					VALUES($1,$2,$3)`
+
+	_, err := db.Exec(ctx, insertSession, payload.ExpiresRefresh, payload.RefreshUID, payload.RefreshToken)
+
+	if err != nil {
+		log.Println(err, " :[ERROR] Insert JWT Payload")
+		return err
+	}
+
+	return nil
 }

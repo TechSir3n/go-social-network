@@ -6,9 +6,8 @@ import (
 	"log"
 	"net/http"
 	"social_network/internal/api/v1/models"
-	"social_network/internal/domain/v2"
+	session "social_network/internal/domain/v2"
 	"social_network/internal/pkg/jwt"
-	DB "social_network/internal/repository"
 	database "social_network/internal/repository"
 	"social_network/utils"
 )
@@ -27,7 +26,7 @@ func Login(wrt http.ResponseWriter, req *http.Request) {
 		apiUser.Password = password
 
 		ctx := context.Background()
-		user, err := DB.GetUserByEmail(ctx, email)
+		user, err := database.GetUserByEmail(ctx, email)
 		if err != nil {
 			wrt.WriteHeader(http.StatusNotFound)
 			log.Println(err, " :User not found")
@@ -43,9 +42,23 @@ func Login(wrt http.ResponseWriter, req *http.Request) {
 			return
 		}
 
-		validToken, err := jwt.GenerateJWT(user)
+		payload, err := jwt.GenerateJWT(user) // generate access and refresh token
+		if err != nil {
+			log.Println(err, " :[ERROR] Generate JWT")
+			return
+		}
 
-		v2.SetCookie(wrt, validToken) // set cookie http.Cookie(...)
+		fmt.Println("Access Token: ", payload.RefreshToken)
+		fmt.Println("Access Token: ", payload.RefreshUID)
+		fmt.Println("Access Token: ", payload.ExpiresRefresh)
+
+		err = database.CreateSessions(ctx, payload) // add refresh token to database session
+		if err != nil {
+			log.Println(err, ": [ERROR] Create Session")
+			return
+		}
+
+		//session.SetCookie(wrt, access_token) // set cookie http.Cookie(...)
 
 		if err != nil {
 			log.Println(err, ": Invalid Token")
@@ -65,14 +78,14 @@ func Authentication(endPoint http.HandlerFunc) http.HandlerFunc {
 		wrt.Header().Set("Content-Type", "text/html; charset=utf-8")
 
 		cookie, err := req.Cookie("Access_Token")
-		token := cookie.Value
+		access_token := cookie.Value
 
 		if err != nil {
 			log.Println(err, "Not found name cookie")
 			return
 		}
 
-		value, err := jwt.IsValidToken(token)
+		value, err := jwt.ParseJWT(access_token)
 		fmt.Println("Value: ", value)
 
 		if err != nil {
@@ -85,6 +98,8 @@ func Authentication(endPoint http.HandlerFunc) http.HandlerFunc {
 }
 
 func SignUp(wrt http.ResponseWriter, req *http.Request) {
+	wrt.Header().Set("Content-Type", "text/html; charset=utf-8")
+
 	if req.Method == http.MethodPost {
 		name := req.FormValue("name")
 		email := req.FormValue("email")
@@ -124,7 +139,7 @@ func SignUp(wrt http.ResponseWriter, req *http.Request) {
 		}
 
 		ctx := context.Background()
-		id_user, err := DB.CreateUser(ctx, user)
+		id_user, err := database.CreateUser(ctx, user)
 
 		if err != nil {
 			utils.ExecTemplate(wrt, "C:/Users/Ruslan/Desktop/go-social-network/static/signup.html", err)
@@ -139,11 +154,11 @@ func SignUp(wrt http.ResponseWriter, req *http.Request) {
 }
 
 func Logout(wrt http.ResponseWriter, req *http.Request) {
-	v2.ClearCookie(wrt)
+	session.ClearCookie(wrt)
 	http.Redirect(wrt, req, "/", http.StatusSeeOther)
 }
 
-func ResetPassword(wrt http.ResponseWriter, req *http.Request) {
+func RestorePassword(wrt http.ResponseWriter, req *http.Request) {
 	wrt.Header().Set("Content-Type", "text/html; charset=utf-8")
 	if req.Method == http.MethodPost {
 		email := req.FormValue("email")
@@ -186,5 +201,9 @@ func ResetPassword(wrt http.ResponseWriter, req *http.Request) {
 		http.Redirect(wrt, req, "/login", http.StatusSeeOther)
 	}
 
-	utils.ExecTemplate(wrt, "C:/Users/Ruslan/Desktop/go-social-network/static/resetpassword.html", nil)
+	utils.ExecTemplate(wrt, "C:/Users/Ruslan/Desktop/go-social-network/static/restorepassword.html", nil)
+}
+
+func ResetPassword(wrt http.ResponseWriter, req *http.Request) {
+
 }

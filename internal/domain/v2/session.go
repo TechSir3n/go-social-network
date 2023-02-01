@@ -1,4 +1,4 @@
-package v2
+package session
 
 import (
 	"net/http"
@@ -6,12 +6,14 @@ import (
 )
 
 func SetCookie(wrt http.ResponseWriter, token string) {
-	expires := time.Now().AddDate(1, 0, 0)
+	expires := time.Now().AddDate(0, 6, 0)
 	cookie := http.Cookie{
 		Name:     "Access_Token",
 		Value:    token,
+		
 		HttpOnly: true,
-		Path:     "/login",
+		Path:     "/",
+		SameSite: http.SameSiteLaxMode,
 		Expires:  expires,
 	}
 
@@ -22,7 +24,8 @@ func ClearCookie(wrt http.ResponseWriter) {
 	cookie := http.Cookie{
 		Name:     "Access_Token",
 		HttpOnly: true,
-		Path:     "/login",
+		Path:     "/",
+		SameSite: http.SameSiteLaxMode,
 		MaxAge:   -1,
 	}
 

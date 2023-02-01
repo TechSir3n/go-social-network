@@ -11,4 +11,6 @@ var (
 
 	ErrInvalidToken       = errors.New("invalid token")
 	ErrInvalidFingerprint = errors.New("invalid fingerprint")
+
+	ErrNil = errors.New("no matching record found in redis database")
 )

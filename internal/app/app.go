@@ -6,9 +6,11 @@ import (
 	"os"
 
 	"social_network/internal/api/router"
+	"social_network/internal/config"
 )
 
 func Run() {
+	config.InitRedis()
 	port := os.Getenv("PORT")
 
 	if port == "" {

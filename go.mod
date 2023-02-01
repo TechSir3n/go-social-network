@@ -13,7 +13,9 @@ require (
 )
 
 require (
+	github.com/go-redis/redis/v7 v7.4.1 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20200714003250-2b9c44734f2b // indirect
+	github.com/twinj/uuid v1.0.0 // indirect
 	golang.org/x/text v0.6.0 // indirect
 )
