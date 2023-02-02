@@ -6,7 +6,7 @@ import (
 	"os"
 
 	"social_network/internal/api/router"
-	"social_network/internal/config"
+	"social_network/internal/config/redis"
 )
 
 func Run() {

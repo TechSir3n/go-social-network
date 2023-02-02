@@ -8,7 +8,8 @@ import (
 	"social_network/internal/api/v1/models"
 	session "social_network/internal/domain/v2"
 	"social_network/internal/pkg/jwt"
-	database "social_network/internal/repository"
+	"social_network/internal/repository/database"
+	"social_network/internal/pkg/crypt"
 	"social_network/utils"
 )
 
@@ -34,7 +35,7 @@ func Login(wrt http.ResponseWriter, req *http.Request) {
 			return
 		}
 
-		compare := utils.CheckPasswordHash(user.Password, apiUser.Password)
+		compare := crypt.CheckPasswordHash(user.Password, apiUser.Password)
 		if !compare {
 			wrt.WriteHeader(http.StatusForbidden)
 			utils.ExecTemplate(wrt, "C:/Users/Ruslan/Desktop/go-social-network/static/login.html", "password is wrong")
@@ -48,17 +49,13 @@ func Login(wrt http.ResponseWriter, req *http.Request) {
 			return
 		}
 
-		fmt.Println("Access Token: ", payload.RefreshToken)
-		fmt.Println("Access Token: ", payload.RefreshUID)
-		fmt.Println("Access Token: ", payload.ExpiresRefresh)
-
 		err = database.CreateSessions(ctx, payload) // add refresh token to database session
 		if err != nil {
 			log.Println(err, ": [ERROR] Create Session")
 			return
 		}
-
-		//session.SetCookie(wrt, access_token) // set cookie http.Cookie(...)
+	
+		session.SetCookie(wrt, payload.AccessToken) // set cookie http.Cookie(...)
 
 		if err != nil {
 			log.Println(err, ": Invalid Token")
@@ -77,8 +74,9 @@ func Authentication(endPoint http.HandlerFunc) http.HandlerFunc {
 	return func(wrt http.ResponseWriter, req *http.Request) {
 		wrt.Header().Set("Content-Type", "text/html; charset=utf-8")
 
-		cookie, err := req.Cookie("Access_Token")
+		cookie, err := req.Cookie("Session")
 		access_token := cookie.Value
+		fmt.Println("Value.Access:",access_token)
 
 		if err != nil {
 			log.Println(err, "Not found name cookie")
@@ -119,7 +117,7 @@ func SignUp(wrt http.ResponseWriter, req *http.Request) {
 			return
 		}
 
-		hash, err := utils.HashPassword(password)
+		hash, err := crypt.HashPassword(password)
 
 		if err != nil {
 			log.Println(err, ": Failed to hashing password")
@@ -158,52 +156,56 @@ func Logout(wrt http.ResponseWriter, req *http.Request) {
 	http.Redirect(wrt, req, "/", http.StatusSeeOther)
 }
 
-func RestorePassword(wrt http.ResponseWriter, req *http.Request) {
+func VerifyEmail(wrt http.ResponseWriter, req *http.Request) {
 	wrt.Header().Set("Content-Type", "text/html; charset=utf-8")
 	if req.Method == http.MethodPost {
 		email := req.FormValue("email")
-		password := req.FormValue("password")
 
-		if email == "" && password == "" {
+		if email == "" {
 			http.Error(wrt, "Data claims is empty", http.StatusBadRequest)
 			log.Println("Data from form is empty")
 			return
 		}
 
 		ctx := context.Background()
-		user, err := database.GetUserByEmail(ctx, email)
-
+		_, err := database.GetUserByEmail(ctx, email)
 		if err != nil {
+			http.Error(wrt, "User not found", http.StatusBadRequest)
 			log.Println(err, "Failed to found user with so email address")
 			return
 		}
 
-		hash, err := utils.HashPassword(password)
-
-		if err != nil {
-			log.Println(err, ":Failed to hashing password")
-			return
-		} else if user.Password == password {
-			http.Error(wrt, "Prevent changing the password to the old password", http.StatusBadRequest)
-			return
-		}
-
-		user.Password = hash
-		user.Email = email
-		updated_data, err := database.UpdateUser(ctx, user)
-
-		if err != nil {
-			log.Println(err, "Failed to update password's user")
-			return
-		}
-
-		fmt.Println(updated_data.Email, " :Success updated !")
-		http.Redirect(wrt, req, "/login", http.StatusSeeOther)
+		http.Redirect(wrt, req, "/reset/password", http.StatusSeeOther)
 	}
 
 	utils.ExecTemplate(wrt, "C:/Users/Ruslan/Desktop/go-social-network/static/restorepassword.html", nil)
 }
 
 func ResetPassword(wrt http.ResponseWriter, req *http.Request) {
+	wrt.Header().Set("Content-Type", "text/html; charset=utf-8")
+	if req.Method == http.MethodPost {
+		password := req.FormValue("password")
+		if password == "" {
+			http.Error(wrt, "Password must be fill ", http.StatusBadRequest)
+			return
+		}
 
+		var user models.User
+		hash, err := crypt.HashPassword(password)
+		user.Password = hash
+
+		if err != nil {
+			log.Println(err, " :Failed to hashing password")
+			return
+		}
+
+		ctx := context.Background()
+		err = database.UpdateUserPassword(ctx, user.Password)
+		if err != nil {
+			log.Println(err, " :Failed to update user password")
+			return
+		}
+		http.Redirect(wrt, req, "/login", http.StatusSeeOther)
+	}
+	utils.ExecTemplate(wrt, "C:/Users/Ruslan/Desktop/go-social-network/static/resetpassword.html", nil)
 }

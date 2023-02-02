@@ -5,12 +5,11 @@ import (
 	"time"
 )
 
-func SetCookie(wrt http.ResponseWriter, token string) {
+func SetCookie(wrt http.ResponseWriter, tokenAccess string) {
 	expires := time.Now().AddDate(0, 6, 0)
 	cookie := http.Cookie{
-		Name:     "Access_Token",
-		Value:    token,
-		
+		Name:     "Session",
+		Value:    tokenAccess,
 		HttpOnly: true,
 		Path:     "/",
 		SameSite: http.SameSiteLaxMode,
@@ -22,13 +21,12 @@ func SetCookie(wrt http.ResponseWriter, token string) {
 
 func ClearCookie(wrt http.ResponseWriter) {
 	cookie := http.Cookie{
-		Name:     "Access_Token",
+		Name:     "Session",
+		Value:    "",
 		HttpOnly: true,
 		Path:     "/",
-		SameSite: http.SameSiteLaxMode,
 		MaxAge:   -1,
 	}
 
 	http.SetCookie(wrt, &cookie)
-
 }

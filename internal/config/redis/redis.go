@@ -5,6 +5,7 @@ _	"github.com/go-redis/redis/v7"
 _	"os"
 )
 
+// in progress 
 // for initialize redis 
 
 func InitRedis(){

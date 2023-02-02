@@ -7,7 +7,7 @@ import (
 
 	"github.com/twinj/uuid"
 
-	_ "social_network/internal/config"
+	_ "social_network/internal/config/database"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
@@ -45,7 +45,6 @@ func GenerateJWT(user models.User) (*PayloadJWT, error) {
 
 	strRefresh := jwt.NewWithClaims(jwt.SigningMethodHS256, access_token)
 	payload.RefreshToken, err = strRefresh.SignedString([]byte(os.Getenv("REFRESH_TOKEN")))
-
 	if err != nil {
 		log.Println(err, " :[ERROR] REFRESH TOKEN")
 		return &PayloadJWT{}, nil
@@ -57,7 +56,7 @@ func GenerateJWT(user models.User) (*PayloadJWT, error) {
 func ParseJWT(tokenStr string) (*jwt.Token, error) {
 	payload := &PayloadJWT{}
 	token, err := jwt.ParseWithClaims(tokenStr, payload, func(t *jwt.Token) (interface{}, error) {
-		return []byte(os.Getenv("SECKET_KEY")), nil
+		return []byte(os.Getenv("ACCESS_TOKEN")), nil
 	})
 
 	if err != nil {

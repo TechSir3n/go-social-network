@@ -3,13 +3,12 @@ package utils
 import (
 	"context"
 	"github.com/pkg/errors"
-	"golang.org/x/crypto/bcrypt"
 	templ "html/template"
 	"log"
 	"net/http"
 
 	"social_network/internal/api/v1/models"
-	"social_network/internal/repository"
+	"social_network/internal/repository/database"
 	"unicode"
 )
 
@@ -24,16 +23,6 @@ func ExecTemplate(w http.ResponseWriter, template string, data interface{}) {
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
-}
-
-func HashPassword(password string) (string, error) {
-	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
-	return string(bytes), err
-}
-
-func CheckPasswordHash(password, hash string) bool {
-	err := bcrypt.CompareHashAndPassword([]byte(password), []byte(hash))
-	return err == nil
 }
 
 func IsName(name string) bool {

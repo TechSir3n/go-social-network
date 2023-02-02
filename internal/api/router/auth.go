@@ -15,7 +15,7 @@ func init() {
 
 	APIRouter.HandleFunc("/logout", v1.Logout).Methods("GET", "POST")
 
-	APIRouter.HandleFunc("/restore/password", v1.RestorePassword).Methods("GET", "POST")
+	APIRouter.HandleFunc("/restore/password", v1.VerifyEmail).Methods("GET", "POST")
 
 	APIRouter.HandleFunc("/reset/password", v1.ResetPassword).Methods("GET", "POST")
 }
