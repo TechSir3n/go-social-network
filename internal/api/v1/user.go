@@ -1,11 +1,15 @@
 package v1
 
-import "net/http"
+import (
+	"net/http"
+	_ "social_network/utils"
+)
 
-func UserIndex(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Welcome, User"))
+func UserIndex(wrt http.ResponseWriter, req *http.Request) {
+	
 }
 
-func AdminIndex(w http.ResponseWriter, r *http.Request){
-	w.Write([]byte("Welcome Admin"))
+// to use this method need admin rights
+func AdminIndex(w http.ResponseWriter, r *http.Request) {
+	
 }

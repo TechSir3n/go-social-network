@@ -8,13 +8,12 @@ import (
 	"net/http"
 
 	"social_network/internal/api/v1/models"
-	"social_network/internal/repository/database"
+	"social_network/internal/repository/database/postgresql"
 	"unicode"
 )
 
 func ExecTemplate(w http.ResponseWriter, template string, data interface{}) {
 	t, err := templ.ParseFiles(template)
-
 	if err != nil {
 		log.Fatal("Failed to read html file")
 	}

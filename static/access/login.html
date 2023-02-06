@@ -3,19 +3,20 @@
 
 <head>
     <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
     <link rel="stylesheet" type="text/css" href="./css/login.css">
-    <h1>Login</h1>
+
     <title>Login Page</title>
 </head>
 
 <body>
+    <h>Login</h>
     <form method="POST" action="/login">
-
-
         <div class="container">
 
             <label><b>Name</b></label>
-            <input type="text" name="name" placeholder="Enter your name" required>
+            <input type="text" id="nameID" name="name" placeholder="Enter your name" required>
 
             <br> <br>
 
@@ -29,7 +30,7 @@
 
             <br> <br>
 
-            <button type="submit"> <strong>Login</strong> </button>
+            <button id="buttonID" type="submit"> <strong>Login</strong> </button>
 
             <label>
                 <input type="checkbox" checked="checked" name="remember"> Remember me
@@ -38,8 +39,8 @@
             <span class="psw"><a href="/reset/password"><strong>Are you forgot password ?</strong> </a></span>
 
         </div>
+        <script type="application/javascript" src="./js/script.js"></script>
     </form>
-
 </body>
 
 </html>

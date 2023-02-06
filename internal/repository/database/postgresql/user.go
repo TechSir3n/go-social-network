@@ -1,11 +1,11 @@
-package database 
+package database
 
 import (
-	"social_network/internal/api/v1/models"
-	"github.com/pkg/errors"
-	"social_network/internal/config/database"
 	"context"
+	"github.com/pkg/errors"
 	"log"
+	"social_network/internal/api/v1/models"
+	"social_network/internal/config/database"
 )
 
 func GetUser(ctx context.Context) ([]models.User, error) {
@@ -37,7 +37,6 @@ func GetUser(ctx context.Context) ([]models.User, error) {
 
 	return data, nil
 }
-
 
 func GetUserByID(ctx context.Context, id string) (models.User, error) {
 	var user models.User
