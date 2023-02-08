@@ -2,10 +2,28 @@ package v1
 
 import (
 	"net/http"
-	"social_network/utils"
 )
 
 
-func Home(wrt http.ResponseWriter, req *http.Request){
-	utils.ExecTemplate(wrt, "C:/Users/Ruslan/Desktop/go-social-network/static/home/main.html", nil)
+func Message(wrt http.ResponseWriter, req *http.Request){
+
+}
+
+
+func Friends(wrt http.ResponseWriter, req *http.Request){
+
+}
+
+
+func Music(wrt http.ResponseWriter, req *http.Request){
+
+}
+
+
+func Bookmarks(wrt http.ResponseWriter, req *http.Request){
+
+}
+
+func Settings(wrt http.ResponseWriter, req *http.Request){
+
 }

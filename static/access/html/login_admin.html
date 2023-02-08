@@ -5,17 +5,21 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-
+    <!-- < link rel="stylesheet" type="text/css" href="./css/admin.css"> -->
 
     <title>Login Page</title>
 </head>
 
 <body>
     <form method="POST" action="/admin">
+        <h2>Login for Administrator</h2>
+        <label><strong>Name Admin</strong></label>
+        <input type="text" id="name_admin" placeholder="Name ADMIN:" required>
         <label><strong>SPECIAL_KEY</strong></label>
         <input type="password" name="special_key" placeholder="ADMIN PASSWORD:" required>
-        <button>Confirm Key</button>
+        <button id="buttonADMIN">Confirm Key</button>
     </form>
+    <script type="application/javascript" src="../js/script.js"></script>
 </body>
 
 </html>

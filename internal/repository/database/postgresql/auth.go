@@ -40,7 +40,6 @@ func NewUserService(user UserRepository, model models.User) *UserService {
 	}
 }
 
-
 func CreateUser(ctx context.Context, user models.User) (models.User, error) {
 	user.DB = config.ConnectDB()
 
@@ -76,12 +75,13 @@ func DeleteUser(ctx context.Context, id string) (models.User, error) {
 	}, nil
 }
 
-func UpdateUserEmail(ctx context.Context, address string) error {
+func UpdateUserEmail(ctx context.Context, address, id_user string) error {
 	var user models.User
 	user.UpdatedAt = time.Now().Format(time.ANSIC)
 	user.DB = config.ConnectDB()
-	sqlUpdate := `UPDATE users SET email=$1,updated_at=$2`
-	_, err := user.DB.Exec(ctx, sqlUpdate, address, user.UpdatedAt)
+
+	sqlUpdate := `UPDATE users SET updated_at=$1,email=$2 WHERE id=$3`
+	_, err := user.DB.Exec(ctx, sqlUpdate, user.UpdatedAt, address, id_user)
 	if err != nil {
 		errors.Wrap(err, " :[ERROR]")
 		return err
@@ -90,12 +90,13 @@ func UpdateUserEmail(ctx context.Context, address string) error {
 	return nil
 }
 
-func UpdateUserPassword(ctx context.Context, password string) error {
+func UpdateUserPassword(ctx context.Context, password, id_user string) error {
 	var user models.User
 	user.DB = config.ConnectDB()
 	user.UpdatedAt = time.Now().Format(time.ANSIC)
-	sqlUpdate := `UPDATE users SET password=$1`
-	_, err := user.DB.Exec(ctx, sqlUpdate, password)
+
+	sqlUpdate := `UPDATE users SET updated_at=$1,password=$2 WHERE id=$3`
+	_, err := user.DB.Exec(ctx, sqlUpdate, user.UpdatedAt, password, id_user)
 	if err != nil {
 		log.Println(err, " :[ERROR]")
 		return err
@@ -104,12 +105,12 @@ func UpdateUserPassword(ctx context.Context, password string) error {
 	return nil
 }
 
-func UpdateUserName(ctx context.Context, username string) error {
+func UpdateUserName(ctx context.Context, username, id_user string) error {
 	var user models.User
 	user.DB = config.ConnectDB()
 	user.UpdatedAt = time.Now().Format(time.ANSIC)
-	sqlUpdate := `UPDATE users SET name=$1`
-	_, err := user.DB.Exec(ctx, sqlUpdate, username)
+	sqlUpdate := `UPDATE users SET updated_at=$1,name=$2 WHERE id=$3`
+	_, err := user.DB.Exec(ctx, sqlUpdate, user.UpdatedAt, username, id_user)
 	if err != nil {
 		log.Println(err, " :[ERROR]")
 		return err

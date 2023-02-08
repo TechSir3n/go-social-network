@@ -1,12 +1,12 @@
 package router
 
 import (
-	v1 "social_network/internal/api/v1"
+	 "social_network/internal/api/v1"
 
 	"github.com/gorilla/mux"
 )
 
-var APIRouter = mux.NewRouter()
+var APIRouter = mux.NewRouter().StrictSlash(true)
 
 func init() {
 	APIRouter.HandleFunc("/registration", v1.SignUp).Methods("GET", "POST")
@@ -19,5 +19,5 @@ func init() {
 
 	APIRouter.HandleFunc("/reset/password", v1.ResetPassword).Methods("GET", "POST")
 
-	APIRouter.HandleFunc("/admin", v1.AccessAdmin).Methods("GET", "POST")
+	APIRouter.HandleFunc("/access/admin", v1.AccessAdmin).Methods("GET", "POST")
 }

@@ -1,11 +1,11 @@
 package main
 
 import (
-	"log"
 	"net/http"
 	"os"
 	"social_network/internal/api/router"
 	"social_network/utils/password"
+	"social_network/utils/log"
 )
 
 

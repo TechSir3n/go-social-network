@@ -8,10 +8,10 @@ import (
 	"social_network/internal/config/database"
 )
 
-func GetUser(ctx context.Context) ([]models.User, error) {
+func GetUsers(ctx context.Context) ([]models.User, error) {
 	var user models.User
 	user.DB = config.ConnectDB()
-	rows, err := user.DB.Query(ctx, "SELECT email,password,name,confirm_password FROM users")
+	rows, err := user.DB.Query(ctx, "SELECT id,email,name FROM users")
 	if err != nil {
 		errors.Wrap(err, "Failed to get some data from the database")
 		return []models.User{}, err
@@ -22,11 +22,10 @@ func GetUser(ctx context.Context) ([]models.User, error) {
 	data := []models.User{}
 
 	for rows.Next() {
-		err := rows.Scan(user.ID, user.Email, user.Password)
+		err := rows.Scan(&user.ID, &user.Email, &user.Name)
 		if err != nil {
 			errors.Wrap(err, " :[ERROR]")
 		}
-
 		data = append(data, user)
 	}
 
@@ -41,7 +40,7 @@ func GetUser(ctx context.Context) ([]models.User, error) {
 func GetUserByID(ctx context.Context, id string) (models.User, error) {
 	var user models.User
 	user.DB = config.ConnectDB()
-	rows, err := user.DB.Query(ctx, "SELECT * FROM users WHERE id_user=$1", id)
+	rows, err := user.DB.Query(ctx, "SELECT id,email,name FROM users WHERE id=$1", id)
 
 	if err != nil {
 		errors.Wrap(err, "Couldn't be found data with such id into database")
@@ -49,7 +48,9 @@ func GetUserByID(ctx context.Context, id string) (models.User, error) {
 	}
 
 	for rows.Next() {
-		rows.Scan(&user.ID, &user.Email, &user.Password)
+		if err = rows.Scan(&user.ID, &user.Email, &user.Name); err != nil {
+			log.Println(err, ": FAILED to scan into structure")
+		}
 	}
 
 	if rows.Err() != nil {
@@ -59,16 +60,15 @@ func GetUserByID(ctx context.Context, id string) (models.User, error) {
 
 	return models.User{
 		ID:       user.ID,
+		Password: user.Name,
 		Email:    user.Email,
-		Password: user.Password,
 	}, nil
 }
 
 func GetUserByEmail(ctx context.Context, email string) (models.User, error) {
 	var user models.User
 	user.DB = config.ConnectDB()
-	rows, err := user.DB.Query(ctx, "SELECT email,password,name FROM users WHERE email = $1", email)
-
+	rows, err := user.DB.Query(ctx, "SELECT id,email,password,name FROM users WHERE email = $1", email)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -76,14 +76,14 @@ func GetUserByEmail(ctx context.Context, email string) (models.User, error) {
 	defer rows.Close()
 
 	for rows.Next() {
-		if err = rows.Scan(&user.Email, &user.Password, &user.Name); err != nil {
-			log.Fatal(err)
+		if err = rows.Scan(&user.ID, &user.Email, &user.Name); err != nil {
+			log.Println(err, ": FAILED to scan into structure")
 		}
 	}
 
 	return models.User{
+		ID:       user.ID,
 		Name:     user.Name,
 		Email:    user.Email,
-		Password: user.Password,
 	}, nil
 }

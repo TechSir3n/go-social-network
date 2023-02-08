@@ -50,7 +50,7 @@ func IsPassword(password string) bool {
 }
 
 func IsEmail(email string) bool {
-	login, err := database.GetUser(context.Background())
+	login, err := database.GetUsers(context.Background())
 	var IsTrue bool = true
 
 	if err != nil {

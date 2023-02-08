@@ -8,12 +8,19 @@ build:
 run: build
 	./${BINARY_NAME}
 
+dep:
+	go mod download
+
+// soon 
+test:
+	go test
+
+// soon 
+bench:
+	go test -bench
+
 clean:
 	go clean 
 	rm ${BINARY_NAME}-darwin 
 	rm ${BINARY_NAME}-windows
 	rm ${BINARY_NAME}-linux
-
-
-dep:
-	go mod download

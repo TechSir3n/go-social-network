@@ -22,24 +22,25 @@ func Login(wrt http.ResponseWriter, req *http.Request) {
 		email := req.FormValue("email")
 		password := req.FormValue("password")
 
-		apiUser := models.SignInRequest{}
-		apiUser.Username = username
-		apiUser.Email = email
-		apiUser.Password = password
+		apiUser := models.SignInRequest{
+			Username: username,
+			Email:    email,
+			Password: password,
+		}
 
 		ctx := context.Background()
 		user, err := database.GetUserByEmail(ctx, email)
 		if err != nil {
 			wrt.WriteHeader(http.StatusNotFound)
 			log.Println(err, " :User not found")
-			utils.ExecTemplate(wrt, "C:/Users/Ruslan/Desktop/go-social-network/static/access/login.html", "User not found")
+			utils.ExecTemplate(wrt, "C:/Users/Ruslan/Desktop/go-social-network/static/access/html/login.html", "User not found")
 			return
 		}
 
 		compare := crypt.CheckPasswordHash(user.Password, apiUser.Password)
 		if !compare {
 			wrt.WriteHeader(http.StatusForbidden)
-			utils.ExecTemplate(wrt, "C:/Users/Ruslan/Desktop/go-social-network/static/access/login.html", "password is wrong")
+			utils.ExecTemplate(wrt, "C:/Users/Ruslan/Desktop/go-social-network/static/access/html/login.html", "password is wrong")
 			return
 		}
 
@@ -59,14 +60,14 @@ func Login(wrt http.ResponseWriter, req *http.Request) {
 
 		if err != nil {
 			log.Println(err, ": Invalid Token")
-			utils.ExecTemplate(wrt, "C:/Users/Ruslan/Desktop/go-social-network/static/access/login.html", "Invalid Generate token")
+			utils.ExecTemplate(wrt, "C:/Users/Ruslan/Desktop/go-social-network/static/access/html/login.html", "Invalid Generate token")
 			return
 		}
 
-		http.Redirect(wrt, req, "/user", http.StatusSeeOther)
+		http.Redirect(wrt, req, "/home", http.StatusSeeOther)
 	}
 
-	utils.ExecTemplate(wrt, "C:/Users/Ruslan/Desktop/go-social-network/static/access/login.html", nil)
+	utils.ExecTemplate(wrt, "C:/Users/Ruslan/Desktop/go-social-network/static/access/html/login.html", nil)
 
 }
 
@@ -102,13 +103,13 @@ func SignUp(wrt http.ResponseWriter, req *http.Request) {
 		confirm_pswd := req.FormValue("confirm_pswd") // password to confirm
 
 		if !utils.IsName(name) {
-			utils.ExecTemplate(wrt, "C:/Users/Ruslan/Desktop/go-social-network/static/access/signup.html", "Wrong name entered,or user with so name already exists")
+			utils.ExecTemplate(wrt, "C:/Users/Ruslan/Desktop/go-social-network/static/access/html/signup.html", "Wrong name entered,or user with so name already exists")
 			return
 		} else if !utils.IsEmail(email) {
-			utils.ExecTemplate(wrt, "C:/Users/Ruslan/Desktop/go-social-network/static/access/signup.html", "Wrong email entered,or so email already exists")
+			utils.ExecTemplate(wrt, "C:/Users/Ruslan/Desktop/go-social-network/static/access/html/signup.html", "Wrong email entered,or so email already exists")
 			return
 		} else if !utils.IsPassword(password) {
-			utils.ExecTemplate(wrt, "C:/Users/Ruslan/Desktop/go-social-network/static/access/signup.html", "Wrong password entered")
+			utils.ExecTemplate(wrt, "C:/Users/Ruslan/Desktop/go-social-network/static/access/html/signup.html", "Wrong password entered")
 			return
 		}
 
@@ -119,15 +120,16 @@ func SignUp(wrt http.ResponseWriter, req *http.Request) {
 			return
 		}
 
-		user := models.User{}
-		user.Name = name
-		user.Password = hash
-		user.Email = email
-		user.ConfirmPassword = confirm_pswd
+		user := models.User{
+			Name:            name,
+			Password:        hash,
+			Email:           email,
+			ConfirmPassword: confirm_pswd,
+		}
 
 		if password == "" || password != user.ConfirmPassword {
 			wrt.WriteHeader(http.StatusNotFound)
-			utils.ExecTemplate(wrt, "C:/Users/Ruslan/Desktop/go-social-network/static/access/signup.html", "Password do not match")
+			utils.ExecTemplate(wrt, "C:/Users/Ruslan/Desktop/go-social-network/static/access/html/signup.html", "Password do not match")
 			return
 		}
 
@@ -135,7 +137,7 @@ func SignUp(wrt http.ResponseWriter, req *http.Request) {
 		id_user, err := database.CreateUser(ctx, user)
 
 		if err != nil {
-			utils.ExecTemplate(wrt, "C:/Users/Ruslan/Desktop/go-social-network/static/access/signup.html", err)
+			utils.ExecTemplate(wrt, "C:/Users/Ruslan/Desktop/go-social-network/static/access/html/signup.html", err)
 			return
 		}
 
@@ -143,7 +145,7 @@ func SignUp(wrt http.ResponseWriter, req *http.Request) {
 
 		http.Redirect(wrt, req, "/login", http.StatusSeeOther)
 	}
-	utils.ExecTemplate(wrt, "C:/Users/Ruslan/Desktop/go-social-network/static/access/signup.html", nil)
+	utils.ExecTemplate(wrt, "C:/Users/Ruslan/Desktop/go-social-network/static/access/html/signup.html", nil)
 }
 
 func Logout(wrt http.ResponseWriter, req *http.Request) {
@@ -173,7 +175,7 @@ func VerifyEmail(wrt http.ResponseWriter, req *http.Request) {
 		http.Redirect(wrt, req, "/reset/password", http.StatusSeeOther)
 	}
 
-	utils.ExecTemplate(wrt, "C:/Users/Ruslan/Desktop/go-social-network/static/access/restore_password.html", nil)
+	utils.ExecTemplate(wrt, "C:/Users/Ruslan/Desktop/go-social-network/static/access/html/restore_password.html", nil)
 }
 
 func ResetPassword(wrt http.ResponseWriter, req *http.Request) {
@@ -195,14 +197,14 @@ func ResetPassword(wrt http.ResponseWriter, req *http.Request) {
 		}
 
 		ctx := context.Background()
-		err = database.UpdateUserPassword(ctx, user.Password)
+		err = database.UpdateUserPassword(ctx, user.Password,"2")
 		if err != nil {
 			log.Println(err, " :Failed to update user password")
 			return
 		}
 		http.Redirect(wrt, req, "/login", http.StatusSeeOther)
 	}
-	utils.ExecTemplate(wrt, "C:/Users/Ruslan/Desktop/go-social-network/static/access/reset_password.html", nil)
+	utils.ExecTemplate(wrt, "C:/Users/Ruslan/Desktop/go-social-network/static/access/html/reset_password.html", nil)
 }
 
 // login for administrator,using a special key
@@ -221,12 +223,15 @@ func AccessAdmin(wrt http.ResponseWriter, req *http.Request) {
 			errors.Wrap(err, " Unable get :[ADMIN]")
 			return
 		}
-	
+
 		if admin.Special_Key != key {
-			utils.ExecTemplate(wrt, "C:/Users/Ruslan/Desktop/go-social-network/static/access/admin.html", http.StatusForbidden)
-			log.Println("Access is denied,Wrong Admin Key")
+			utils.ExecTemplate(wrt, "C:/Users/Ruslan/Desktop/go-social-network/static/access/hmtl/login_admin.html", http.StatusForbidden)
+			log.Println("Access is denied, Wrong Admin Key")
 			return
 		}
+
+		http.Redirect(wrt, req, "/admin", http.StatusSeeOther)
 	}
-	utils.ExecTemplate(wrt, "C:/Users/Ruslan/Desktop/go-social-network/static/access/admin.html", nil)
+
+	utils.ExecTemplate(wrt, "C:/Users/Ruslan/Desktop/go-social-network/static/access/html/login_admin.html", nil)
 }

@@ -20,7 +20,10 @@ require (
 	github.com/jackc/pgservicefile v0.0.0-20200714003250-2b9c44734f2b // indirect
 	github.com/redis/go-redis/v9 v9.0.2 // indirect
 	github.com/sethvargo/go-password v0.2.0 // indirect
+	github.com/sirupsen/logrus v1.9.0 // indirect
+	github.com/t-tomalak/logrus-easy-formatter v0.0.0-20190827215021-c074f06c5816 // indirect
 	github.com/twinj/uuid v1.0.0 // indirect
+	golang.org/x/sys v0.4.0 // indirect
 	golang.org/x/text v0.6.0 // indirect
 	gopkg.in/robfig/cron.v2 v2.0.0-20150107220207-be2e0b0deed5 // indirect
 )
