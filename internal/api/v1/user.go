@@ -25,7 +25,7 @@ func UserIndex(wrt http.ResponseWriter, req *http.Request) {
 		UpdateUserEmail(wrt, req, "")
 	}
 
-	utils.ExecTemplate(wrt, "C:/Users/Ruslan/Desktop/go-social-network/static/home/html/main.html", nil)
+	utils.ExecTemplate(wrt, "C:/Users/Ruslan/Desktop/go-social-network/static/home/html/settings.html", nil)
 }
 
 func UpdateUserName(wrt http.ResponseWriter, req *http.Request, name string) {
@@ -50,7 +50,7 @@ func UpdateUserPassword(wrt http.ResponseWriter, req *http.Request, password str
 			return
 		}
 	}
-	utils.ExecTemplate(wrt, "C:/Users/Ruslan/Desktop/go-social-network/static/home/html/settings.html", nil)
+
 }
 
 func UpdateUserEmail(wrt http.ResponseWriter, req *http.Request, email string) {
@@ -63,5 +63,5 @@ func UpdateUserEmail(wrt http.ResponseWriter, req *http.Request, email string) {
 			return
 		}
 	}
-	utils.ExecTemplate(wrt, "C:/Users/Ruslan/Desktop/go-social-network/static/home/html/settings.html", nil)
+
 }

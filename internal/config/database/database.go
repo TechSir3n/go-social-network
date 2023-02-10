@@ -1,18 +1,17 @@
 package config
 
 import (
-	"context"
 	"fmt"
-	"log"
-	"os"
+	"context"
 	"github.com/jackc/pgx/v5"
 	"github.com/joho/godotenv"
-	_ "github.com/lib/pq"
+	"os"
+	"social_network/utils/logger"
 )
 
 func init() {
 	if err := godotenv.Load("C:/Users/Ruslan/Desktop/go-social-network/.env"); err != nil {
-		log.Print("No .env file found")
+		logger.Error("Failed to load .env file")
 	}
 }
 
@@ -24,15 +23,15 @@ func ConnectDB() *pgx.Conn {
 	username := os.Getenv("DB_USER")
 
 	psqlInfo := fmt.Sprintf("host=%s port=%s user=%s "+
-	"password=%s dbname=%s sslmode=disable",
-	host, port, username, password, dbname)
+		"password=%s dbname=%s sslmode=disable",
+		host, port, username, password, dbname)
 
-	conn, err := pgx.Connect(context.Background(),psqlInfo)
+	conn, err := pgx.Connect(context.Background(), psqlInfo)
 	if err != nil {
-		log.Fatal("Failed open database: ", err)
+		logger.Error(err, ": Unable to connect database")
 	}
 
-	fmt.Println("Database connected")
+	logger.Info("Database connected successfully")
 
 	return conn
 }

@@ -13,6 +13,7 @@ import (
 	"social_network/internal/repository/database/postgresql"
 	redis "social_network/internal/repository/database/redis"
 	"social_network/utils"
+	valid "social_network/utils/validator"
 )
 
 func Login(wrt http.ResponseWriter, req *http.Request) {
@@ -102,19 +103,13 @@ func SignUp(wrt http.ResponseWriter, req *http.Request) {
 		password := req.FormValue("password")
 		confirm_pswd := req.FormValue("confirm_pswd") // password to confirm
 
-		if !utils.IsName(name) {
-			utils.ExecTemplate(wrt, "C:/Users/Ruslan/Desktop/go-social-network/static/access/html/signup.html", "Wrong name entered,or user with so name already exists")
-			return
-		} else if !utils.IsEmail(email) {
-			utils.ExecTemplate(wrt, "C:/Users/Ruslan/Desktop/go-social-network/static/access/html/signup.html", "Wrong email entered,or so email already exists")
-			return
-		} else if !utils.IsPassword(password) {
-			utils.ExecTemplate(wrt, "C:/Users/Ruslan/Desktop/go-social-network/static/access/html/signup.html", "Wrong password entered")
+		if !valid.IsPassword(password) && !valid.IsEmail(email) && !valid.IsName(name) {
+			http.Error(wrt, ": Invalid entered credentials", http.StatusBadRequest)
+			log.Println(" :user entered invalid data")
 			return
 		}
 
 		hash, err := crypt.HashPassword(password)
-
 		if err != nil {
 			log.Println(err, ": Failed to hashing password")
 			return
@@ -197,7 +192,7 @@ func ResetPassword(wrt http.ResponseWriter, req *http.Request) {
 		}
 
 		ctx := context.Background()
-		err = database.UpdateUserPassword(ctx, user.Password,"2")
+		err = database.UpdateUserPassword(ctx, user.Password, "2")
 		if err != nil {
 			log.Println(err, " :Failed to update user password")
 			return

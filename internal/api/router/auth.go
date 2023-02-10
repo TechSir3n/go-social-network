@@ -1,8 +1,7 @@
 package router
 
 import (
-	 "social_network/internal/api/v1"
-
+	"social_network/internal/api/v1"
 	"github.com/gorilla/mux"
 )
 

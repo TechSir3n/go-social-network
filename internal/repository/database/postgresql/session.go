@@ -1,12 +1,10 @@
 package database
 
-
-import(
+import (
 	"context"
-	"social_network/internal/pkg/jwt"
-	"social_network/internal/config/database"
 	"log"
-
+	"social_network/internal/config/database"
+	"social_network/internal/pkg/jwt"
 )
 
 func CreateSessions(ctx context.Context, payload *jwt.PayloadJWT) error {
@@ -18,6 +16,21 @@ func CreateSessions(ctx context.Context, payload *jwt.PayloadJWT) error {
 
 	if err != nil {
 		log.Println(err, " :[ERROR] Insert JWT Payload")
+		return err
+	}
+
+	return nil
+}
+
+func UpdateSessions(ctx context.Context, payload *jwt.PayloadJWT) error {
+	db := config.ConnectDB()
+	insertSession := `UPDATE session (expiresrefresh,refreshuid,refreshtoken)
+					VALUES($1,$2,$3)`
+
+	_, err := db.Exec(ctx, insertSession, payload.ExpiresRefresh, payload.RefreshUID, payload.RefreshToken)
+
+	if err != nil {
+		log.Println(err, " :[ERROR] Update JWT Payload")
 		return err
 	}
 

@@ -1,10 +1,18 @@
+#sidenav {
+    margin-left: 30%;
+    /* Отступ слева */
+
+}
+
+.welcome {
+    margin-left: 31%;
+    margin-top: 4%;
+}
+
 ul {
     list-style: none;
-    /*убираем маркеры списка*/
     margin: 0;
-    /*убираем отступы*/
     padding-left: 0;
-    /*убираем отступы*/
 }
 
 body {
@@ -13,7 +21,6 @@ body {
 
 a {
     text-decoration: none;
-    /*убираем подчеркивание текста ссылок*/
 }
 
 li {

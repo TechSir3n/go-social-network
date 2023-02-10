@@ -1,16 +1,14 @@
 package jwt
 
 import (
-	"log"
 	"os"
-	"social_network/internal/api/v1/models"
-
-	"github.com/twinj/uuid"
-
-	_ "social_network/internal/config/database"
 	"time"
 
+	"social_network/internal/api/v1/models"
+	"social_network/utils/logger"
+
 	"github.com/dgrijalva/jwt-go"
+	"github.com/twinj/uuid"
 )
 
 // Generate JWT(json web token)
@@ -31,7 +29,7 @@ func GenerateJWT(user models.User) (*PayloadJWT, error) {
 	payload.AccessToken, err = strAccess.SignedString([]byte(os.Getenv("ACCESS_TOKEN")))
 
 	if err != nil {
-		log.Println(err, " :[ERROR] ACCESS TOKEN")
+		logger.Error(err, " :[ERROR] ACCESS TOKEN")
 		return &PayloadJWT{}, nil
 	}
 
@@ -46,7 +44,7 @@ func GenerateJWT(user models.User) (*PayloadJWT, error) {
 	strRefresh := jwt.NewWithClaims(jwt.SigningMethodHS256, access_token)
 	payload.RefreshToken, err = strRefresh.SignedString([]byte(os.Getenv("REFRESH_TOKEN")))
 	if err != nil {
-		log.Println(err, " :[ERROR] REFRESH TOKEN")
+		logger.Error(err, " :[ERROR] REFRESH TOKEN")
 		return &PayloadJWT{}, nil
 	}
 
@@ -60,12 +58,12 @@ func ParseJWT(tokenStr string) (*jwt.Token, error) {
 	})
 
 	if err != nil {
-		log.Println(err, " :Invalid Authorization")
+		logger.Error(err, " :Invalid Authorization")
 		return nil, err
 	}
 
 	if !token.Valid {
-		log.Println(err, " :Invalid Token")
+		logger.Error(err, " :Invalid Token")
 		return nil, err
 	}
 

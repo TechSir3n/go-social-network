@@ -12,8 +12,21 @@
 
 <body>
     <form method="POST">
+        <div class="buttons">
+            <button>Next Video</button>
+            <button>Play/Pause</button>
+        </div>
+
+        <video width="320" height="240" id="video" autoplay controls>
+            <source src="C:/Users/Ruslan/Downloads/music10.mp4" type="video/mp4">
+            <source src="C:/Users/Ruslan/Downloads/music.mp4" type="video/ogg">
+            Your browser does not support the video tag.
+
+            <track kind="subtitles" src="subtitles_en.vtt" srclang="en">
+        </video>
 
         <a href="">Download video</a>
     </form>
 </body>
+
 </html>

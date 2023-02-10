@@ -1,4 +1,4 @@
-package log
+package logger
 
 import (
 	"context"
@@ -13,7 +13,7 @@ import (
 var Logger = logrus.New()
 
 func GetFile() *os.File {
-	filePath, err := os.OpenFile("./logger.log", os.O_APPEND | os.O_CREATE | os.O_WRONLY, 0666)
+	filePath, err := os.OpenFile("logger.log", os.O_APPEND | os.O_WRONLY, 0666)
 	if err != nil {
 		log.Println(err, "[ERROR] open file")
 		return nil
@@ -55,8 +55,6 @@ func Error(args ...interface{}) {
 }
 
 func Fatal(args ...interface{}) {
-	file := GetFile()
-	Logger.SetOutput(file)
 	Logger.Fatal(args)
 }
 
