@@ -31,7 +31,7 @@ func CheckIsValid(user *models.User) error {
 func IsName(name string) bool {
 	err := Validator.Var(name, "required,min=8,containsany=!@#?")
 	if err != nil {
-		logger.Fatal(err, ":Invalid entered name")
+		logger.Error(err, ":Invalid entered name")
 		return false
 	}
 	return true
@@ -40,7 +40,7 @@ func IsName(name string) bool {
 func IsEmail(email string) bool {
 	err := Validator.Var(email, "required,email")
 	if err != nil {
-		logger.Fatal(err, " :Invalid entered email")
+		logger.Error(err, " :Invalid entered email")
 		return false
 	}
 	return true
@@ -49,7 +49,7 @@ func IsEmail(email string) bool {
 func IsPassword(password string) bool {
 	err := Validator.Var(password, "required,min=8,containsany=!@#?")
 	if err != nil {
-		logger.Fatal(err, ":Invalid entered password")
+		logger.Error(err, ":Invalid entered password")
 		return false
 	}
 	return true

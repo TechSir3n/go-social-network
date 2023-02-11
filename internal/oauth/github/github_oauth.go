@@ -2,7 +2,7 @@ package github
 
 import (
 	"bytes"
-	"context"
+	 "context"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -10,7 +10,7 @@ import (
 	"os"
 
 	"social_network/internal/api/v1"
-	_ "social_network/internal/config/database"
+	 _ "social_network/internal/config/database"
 	model "social_network/internal/oauth/github/model"
 	"social_network/internal/repository/database/postgresql/oauth"
 	"social_network/utils/logger"
@@ -26,6 +26,7 @@ func GithubCallback(wrt http.ResponseWriter, req *http.Request) {
 	code := req.URL.Query().Get("code") // get code of url in which is access token
 	githubAccessToken := GetGithubAccessToken(code) // add access token to get user's data 
 	githubData := GetGithubData(githubAccessToken)	// get user's data 
+
 	database.CreateGitHubUser(context.Background(), githubData)
 	v1.Home(wrt, req)
 }

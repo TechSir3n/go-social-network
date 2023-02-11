@@ -5,13 +5,14 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <link rel="stylesheet" type="text/css" href="./css/login.css">
+    <link rel="stylesheet" type="text/css" href="../css/login.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
     <title>Login Page</title>
 </head>
 
 <body>
-    <h>Login</h>
+    <h1>Login</h1>
     <form method="POST" action="/login">
         <div class="container">
 
@@ -31,6 +32,9 @@
             <br> <br>
 
             <button id="buttonID" type="submit"> <strong>Login</strong> </button>
+
+            <a href="http://localhost:3000/login/github" class="fa fa-github"></a>
+            <a href="http://localhost:3000/google/login" class="fa fa-google"></a>
 
             <label>
                 <input type="checkbox" checked="checked" name="remember"> Remember me

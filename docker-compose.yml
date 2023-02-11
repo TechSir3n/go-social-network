@@ -7,11 +7,12 @@ services:
     ports:
       - "8000:8080"
     depends_on:
-      - database
+      - postgres
+      - redis
     env_file: .env
     container_name: social_network
 
-  database:
+  postgres:
     image: postgres:latest
     restart: always 
     environment:
@@ -23,3 +24,20 @@ services:
     ports:
       - "5432:5432"
     command: social-network --insecure
+    
+
+    redis:
+      restart:  always
+      
+      image: "redis:latest"
+
+      command: redis-server --port 6379 --requirepass password
+
+      ports:
+      - "6379:6379"
+
+      environment:
+      REDIS_REPLICATION_MODE: master
+
+      networks:
+      - hosts

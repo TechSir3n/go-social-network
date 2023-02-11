@@ -2,9 +2,10 @@ package v1
 
 import (
 	"context"
-	"github.com/pkg/errors"
 	"log"
 	"net/http"
+
+	"github.com/pkg/errors"
 
 	"social_network/internal/api/v1/models"
 	session "social_network/internal/domain/v2"
@@ -12,7 +13,9 @@ import (
 	"social_network/internal/pkg/jwt"
 	"social_network/internal/repository/database/postgresql"
 	redis "social_network/internal/repository/database/redis"
+	"social_network/internal/repository/memcached"
 	"social_network/utils"
+	"social_network/utils/logger"
 	valid "social_network/utils/validator"
 )
 
@@ -30,12 +33,20 @@ func Login(wrt http.ResponseWriter, req *http.Request) {
 		}
 
 		ctx := context.Background()
-		user, err := database.GetUserByEmail(ctx, email)
+		var user models.User
+		user_cached, err := memcached.GetMemcached("credentials")
+		
 		if err != nil {
-			wrt.WriteHeader(http.StatusNotFound)
-			log.Println(err, " :User not found")
-			utils.ExecTemplate(wrt, "C:/Users/Ruslan/Desktop/go-social-network/static/access/html/login.html", "User not found")
-			return
+			user_db, err := database.GetUserByEmail(ctx, email)
+			if err != nil {
+				wrt.WriteHeader(http.StatusNotFound)
+				log.Println(err, " :User not found")
+				utils.ExecTemplate(wrt, "C:/Users/Ruslan/Desktop/go-social-network/static/access/html/login.html", "User not found")
+				return
+			}
+			user = user_db
+		} else {
+			user = user_cached
 		}
 
 		compare := crypt.CheckPasswordHash(user.Password, apiUser.Password)
@@ -59,12 +70,6 @@ func Login(wrt http.ResponseWriter, req *http.Request) {
 
 		session.SetCookie(wrt, payload.AccessToken) // set cookie http.Cookie(...)
 
-		if err != nil {
-			log.Println(err, ": Invalid Token")
-			utils.ExecTemplate(wrt, "C:/Users/Ruslan/Desktop/go-social-network/static/access/html/login.html", "Invalid Generate token")
-			return
-		}
-
 		http.Redirect(wrt, req, "/home", http.StatusSeeOther)
 	}
 
@@ -72,7 +77,7 @@ func Login(wrt http.ResponseWriter, req *http.Request) {
 
 }
 
-func Authentication(endPoint http.HandlerFunc) http.HandlerFunc {
+func Authentication(EndPoint http.HandlerFunc) http.HandlerFunc {
 	return func(wrt http.ResponseWriter, req *http.Request) {
 		wrt.Header().Set("Content-Type", "text/html; charset=utf-8")
 
@@ -91,7 +96,7 @@ func Authentication(endPoint http.HandlerFunc) http.HandlerFunc {
 			return
 		}
 
-		endPoint(wrt, req)
+		EndPoint(wrt, req)
 	}
 }
 
@@ -120,6 +125,10 @@ func SignUp(wrt http.ResponseWriter, req *http.Request) {
 			Password:        hash,
 			Email:           email,
 			ConfirmPassword: confirm_pswd,
+		}
+
+		if err := memcached.SetMemcached(user); err != nil {
+			logger.Info(err.Error())
 		}
 
 		if password == "" || password != user.ConfirmPassword {

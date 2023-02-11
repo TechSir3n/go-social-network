@@ -7,16 +7,18 @@
     margin: 24px 0 12px 0;
 }
 
-h1{
+h1 {
     text-align: center;
 }
 
-body 
-{
-  font-family:Arial; 
-  background: -webkit-linear-gradient(to right, #155799, #159957); 
-  background: linear-gradient(to right, #155799, #159957); 
-  color:whitesmoke;
+
+
+
+body {
+    font-family: Arial;
+    background: -webkit-linear-gradient(to right, #155799, #159957);
+    background: linear-gradient(to right, #155799, #159957);
+    color: whitesmoke;
 }
 
 span.psw {
@@ -34,15 +36,15 @@ button {
     font-size: 18px;
 }
 
-button:hover{
+button:hover {
     opacity: 0.6;
     cursor: pointer;
 }
 
-form{
-    width:35rem;
+form {
+    width: 35rem;
     margin: auto;
-    color:whitesmoke;
+    color: whitesmoke;
     backdrop-filter: blur(16px) saturate(180%);
     -webkit-backdrop-filter: blur(16px) saturate(180%);
     background-color: rgba(11, 15, 13, 0.582);
@@ -60,7 +62,7 @@ input[type="email"] {
     box-sizing: border-box;
 }
 
-input{
+input {
     width: 100%;
     margin: 10px 0;
     border-radius: 5px;
@@ -71,4 +73,31 @@ input{
 img {
     width: 25%;
     border-radius: 50%;
+}
+
+.fa {
+    padding: 10px;
+    font-size: 50px;
+    width: 70px;
+    text-align: center;
+    text-decoration: none;
+}
+
+/* Добавить эффект наведения, если вы хотите */
+.fa:hover {
+    opacity: 0.7;
+}
+
+/* Установите определенный цвет для каждого бренда */
+
+/* Facebook */
+.fa-github {
+    background: #3B5998;
+    color: white;
+}
+
+/* Twitter */
+.fa-google {
+    background: #55ACEE;
+    color: white;
 }

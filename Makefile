@@ -1,11 +1,14 @@
-BINARY_NAME=social-network
+BINARY_NAME=./cmd/social-network
+
+all: clean build run
+
 
 build:
     GOARCH=amd64 GOOS=darwin go build -o ${BINARY_NAME}-darwin main.go
     GOARCH=amd64 GOOS=linux go build -o ${BINARY_NAME}-linux main.go
     GOARCH=amd64 GOOS=windows go build -o ${BINARY_NAME}-windows main.go
 
-run: build
+run: 
 	./${BINARY_NAME}
 
 dep:

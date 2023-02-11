@@ -7,7 +7,7 @@ func init() {
 
 	APIRouter.HandleFunc("/admin/{method_find}/find", v1.Authentication(v1.AdminIndex)).Methods("GET", "POST")
 
-	APIRouter.HandleFunc("/admin/{method_delete}/delete", v1.Authentication(v1.AdminIndex)).Methods("GET", "DELETE")
+	APIRouter.HandleFunc("/admin/{method_delete}/delete", v1.Authentication(v1.AdminIndex)).Methods("DELETE")
 
 	APIRouter.HandleFunc("/admin/{method_get}/get", v1.Authentication(v1.AdminIndex)).Methods("GET", "POST")
 
