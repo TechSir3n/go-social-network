@@ -1,4 +1,4 @@
-FROM golang:latest
+FROM golang:latest AS builder 
 
 WORKDIR /social_network/web/app 
 
@@ -8,8 +8,8 @@ COPY go.sum /social_network/web/app/
 COPY . /social_network/web/app/
 
 RUN go mod download 
-RUN go build -o main main.go
+RUN go build -o /main ./cmd/social-network/
 
-EXPOSE 8080 8080
+EXPOSE 3000 3000
 
-CMD [ ". /cmd-social-network/main.go" ]
+ENTRYPOINT ["/main"]

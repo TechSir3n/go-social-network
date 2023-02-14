@@ -1,43 +1,75 @@
-version: "3.9"
+version: '2.15'
+
 services:
-  social_network:
-    build: 
-     context: .
-     dockerfile: Dockerfile
+
+  #
+
+  memcached:
+    restart: on-failure
+    image: memcached
+
+  #
+  redis:
+    image: redis:latest
+
+    restart: on-failure
+
+    hostname: redis
+
+    command: redis-server --port 6379 --requirepass password
+
     ports:
-      - "8000:8080"
-    depends_on:
-      - postgres
-      - redis
-    env_file: .env
-    container_name: social_network
+      - "6379:6379"
+
+  #
 
   postgres:
     image: postgres:latest
-    restart: always 
-    environment:
-      - POSTGRES_NAME=${DB_NAME}
-      - POSTGRES_USER=${DB_USER}
-      - POSTGRES_PORT=${DB_PORT}
-      - POSTGRES_PASSWORD=${DB_PASSWORD:? database password not set}
-      - POSTGRES_HOST=${DB_HOST}
+
+    restart: on-failure
+
+    command: -p 5431
+
     ports:
-      - "5432:5432"
-    command: social-network --insecure
-    
+      - "5431:5431"
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
 
-    redis:
-      restart:  always
-      
-      image: "redis:latest"
+  #
 
-      command: redis-server --port 6379 --requirepass password
+  server:
+    restart: on-failure
+    build: .
+    container_name: 'social-network'
+    ports:
+      - "3000:3000"
+  
+    depends_on:
+      - postgres
+      - redis
+      - memcached
 
-      ports:
-      - "6379:6379"
+    environment:
+      ARGS: -env
 
-      environment:
-      REDIS_REPLICATION_MODE: master
+      #Postgres
+      POSTGRES_PORT: ${DB_PORT}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
 
-      networks:
-      - hosts
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_HOST: ${DB_HOST}
+
+      # Redis 
+      REDIS_HOST: ${REDIS_DSN}
+      REDIS_PASS: ${REDIS_PASSWORD}
+
+      #Memcached
+
+      MEMCACHED_HOST: ${MEMCACHED_DSN}
+
+networks:
+  hosts:
+    driver: "host"
