@@ -1,4 +1,13 @@
 
+.search_user{
+  margin-left: 33%; 
+  
+}
+
+.search_user input{
+  width:20%;
+}
+
 /* Кнопка, используемая для открытия формы чата - исправлена в нижней части страницы */
 .open-button {
   background-color: #555;

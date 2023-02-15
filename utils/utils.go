@@ -3,6 +3,7 @@ package utils
 import (
 	templ "html/template"
 	"log"
+	"math/rand"
 	"net/http"
 )
 
@@ -16,4 +17,15 @@ func ExecTemplate(w http.ResponseWriter, template string, data interface{}) {
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
+}
+
+// this is a random string needed to set in oauth state
+func GenerateRandomString() string {
+	var chars = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0987654321")
+	str := make([]rune, 5)
+	for i := range str {
+		str[i] = chars[rand.Intn(len(chars))]
+	}
+
+	return string(str)
 }
