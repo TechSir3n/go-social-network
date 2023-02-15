@@ -1,5 +1,7 @@
 # Small Social Network 
 
+[![Go 20.0] (https://img.shields.io/badge/Go-20.0-blue)
+
 # [Images (must-view) ⬇️]
 
 ---
