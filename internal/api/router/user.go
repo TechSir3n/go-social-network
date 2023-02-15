@@ -1,14 +1,20 @@
 package router
 
-import  "social_network/internal/api/v1"
-
+import (
+	"social_network/internal/api/router/options"
+	"social_network/internal/api/v1"
+)
 
 func init() {
-	APIRouter.HandleFunc("/user", v1.Authentication(v1.UserIndex)).Methods("GET", "POST")
+	router.APIRouter.HandleFunc("/user/profile", v1.Authentication(v1.Profile))
 
-	APIRouter.HandleFunc("/user/{change_name}/name", v1.Authentication(v1.UserIndex)).Methods("PUT")
+	router.APIRouter.HandleFunc("/user/music", v1.Authentication(v1.Music))
 
-	APIRouter.HandleFunc("/user/{change_email}/email", v1.Authentication(v1.UserIndex)).Methods("PUT")
-	
-	APIRouter.HandleFunc("/user/{change_password}/password", v1.Authentication(v1.UserIndex)).Methods("PUT")
+	router.APIRouter.HandleFunc("/user/settings", v1.Authentication(v1.Settings))
+
+	router.APIRouter.HandleFunc("/user/video", v1.Authentication(v1.Video))
+
+	router.APIRouter.HandleFunc("/user/bookmarks", v1.Authentication(v1.Bookmarks))
+
+	router.APIRouter.HandleFunc("/user/message", v1.Authentication(v1.Message))
 }

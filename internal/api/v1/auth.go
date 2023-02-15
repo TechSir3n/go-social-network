@@ -4,7 +4,6 @@ import (
 	"context"
 	"log"
 	"net/http"
-
 	"github.com/pkg/errors"
 
 	"social_network/internal/api/v1/models"
@@ -35,7 +34,7 @@ func Login(wrt http.ResponseWriter, req *http.Request) {
 		ctx := context.Background()
 		var user models.User
 		user_cached, err := memcached.GetMemcached("credentials")
-		
+		//  if the user is still in the cache, then he will be cured from there otherwise from the database
 		if err != nil {
 			user_db, err := database.GetUserByEmail(ctx, email)
 			if err != nil {

@@ -1,21 +1,20 @@
-package router 
+package router
 
 import (
-   "social_network/internal/api/v1"
+	"net/http"
+	"social_network/internal/api/router/options"
+	"social_network/internal/api/v1"
+	"social_network/internal/socket"
 )
 
 func init() {
-	APIRouter.HandleFunc("/home", v1.Authentication(v1.Home)).Methods("GET", "POST")
+	router.APIRouter.HandleFunc("/home", v1.Authentication(v1.Home))
 
-	APIRouter.HandleFunc("/home/settings", v1.Authentication(v1.Settings)).Methods("GET", "POST")
+	hub := socket.NewHub()
+	go hub.Run()
 
-	APIRouter.HandleFunc("/home/music", v1.Authentication(v1.Music)).Methods("GET", "POST")
+	router.APIRouter.HandleFunc("/ws", v1.Authentication(func(wrt http.ResponseWriter, req *http.Request) {
+		socket.UpgradeWS(hub, wrt, req)
+	}))
 
-	APIRouter.HandleFunc("/home/video", v1.Authentication(v1.Video)).Methods("GET", "POST")
-
-	APIRouter.HandleFunc("/home/bookmarks", v1.Authentication(v1.Bookmarks)).Methods("GET", "POST")
-
-	APIRouter.HandleFunc("/home/message", v1.Authentication(v1.Message)).Methods("GET", "POST")
 }
-
-

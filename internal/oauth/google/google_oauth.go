@@ -6,11 +6,12 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	model "social_network/internal/oauth/google/model"
-	"social_network/internal/repository/database/postgresql/oauth"
-	"social_network/utils/logger"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
+	model "social_network/internal/oauth/google/model"
+	"social_network/internal/repository/database/postgresql/oauth"
+	"social_network/utils"
+	"social_network/utils/logger"
 )
 
 var (
@@ -27,8 +28,10 @@ func init() {
 	}
 }
 
+var rand_state = utils.GenerateRandomString()
+
 func LoginGoogle(wrt http.ResponseWriter, req *http.Request) {
-	url := OauthConfig.AuthCodeURL("pseudo-randod")
+	url := OauthConfig.AuthCodeURL(rand_state)
 	http.Redirect(wrt, req, url, http.StatusMovedPermanently)
 }
 
@@ -44,22 +47,21 @@ func CallBackGoogle(wrt http.ResponseWriter, req *http.Request) {
 		logger.Error(err.Error(), "Failed to unmashall user's data turn structure")
 	}
 
-	
 	_, err = database.CreateGoogleUser(context.Background(), user)
 	if err != nil {
 		logger.Fatal(err.Error(), "Failed to create google's user")
 	}
 
-	// after sucesss authorhization,redirect to home page 
+	// after sucesss authorhization,redirect to home page
 	http.Redirect(wrt, req, "/home", http.StatusSeeOther)
 }
 
 func GetUserInfoGoogle(state string, code string) ([]byte, error) {
-	if state != "pseudo-random" {
+	if state != rand_state {
 		logger.Error("state is not valid")
 	}
 
-	token, err := OauthConfig.Exchange(oauth2.NoContext, code) // convert code in token 
+	token, err := OauthConfig.Exchange(oauth2.NoContext, code) // convert code in token
 	if err != nil {
 		logger.Error(err.Error(), "Failed to convert code turn token")
 	}

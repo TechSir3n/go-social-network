@@ -5,7 +5,6 @@ import (
 	"social_network/internal/api/v1/models"
 	"social_network/internal/config/memcached"
 	"social_network/utils/logger"
-
 	"github.com/bradfitz/gomemcache/memcache"
 )
 
@@ -13,7 +12,7 @@ var mc = config.ConnectMemcached()
 
 func SetMemcached(user models.User) error {
 	val, _ := json.Marshal(user)
-	err := mc.Set(&memcache.Item{Key: "credentials", Value: val, Expiration: 30}) // 30 second time to live
+	err := mc.Set(&memcache.Item{Key: "credentials", Value: val, Expiration:int32(600)}) // 30 second time to live
 	if err != nil {
 		logger.Error(err.Error(), "Failed to set user's data into memcached")
 		return err

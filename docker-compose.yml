@@ -1,18 +1,27 @@
-version: '2.15'
+version: '3.9'
 
 services:
 
-  #
+  #memcached
 
   memcached:
-    restart: on-failure
+    restart: always
+
+    container_name: "memcached"
+
     image: memcached
 
-  #
+    networks:
+      - host
+
+  #redis
+
   redis:
     image: redis:latest
 
-    restart: on-failure
+    container_name: "redis"
+
+    restart: always
 
     hostname: redis
 
@@ -21,12 +30,17 @@ services:
     ports:
       - "6379:6379"
 
-  #
+    networks:
+      - host
+
+  #postgres
 
   postgres:
     image: postgres:latest
 
-    restart: on-failure
+    container_name: "postgres"
+
+    restart: always
 
     command: -p 5431
 
@@ -37,19 +51,55 @@ services:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
 
-  #
+    volumes:
+      - go-app:/migrage/database
+    networks:
+      - host
+
+  #migrate
+
+  migrate:
+    image: migrate/migrate
+
+    container_name: "migrate"
+
+    restart: always
+
+    depends_on:
+      - postgres
+
+    volumes:
+      - ./migrate:/database
+
+    command:
+      [
+        "-database",
+        "postgres://server:password@postgres:5431/postgres?sslmode=disable",
+        "-path",
+        "/database",
+        "up"
+      ]
+
+    networks:
+      - host
+
+  #social-network
 
   server:
-    restart: on-failure
+    restart: always
+
     build: .
+
     container_name: 'social-network'
+
     ports:
       - "3000:3000"
-  
+
     depends_on:
       - postgres
       - redis
       - memcached
+      - migrate
 
     environment:
       ARGS: -env
@@ -62,7 +112,7 @@ services:
       POSTGRES_DB: ${DB_NAME}
       POSTGRES_HOST: ${DB_HOST}
 
-      # Redis 
+      #Redis 
       REDIS_HOST: ${REDIS_DSN}
       REDIS_PASS: ${REDIS_PASSWORD}
 
@@ -70,6 +120,10 @@ services:
 
       MEMCACHED_HOST: ${MEMCACHED_DSN}
 
+volumes:
+  go-app:
+
+
 networks:
-  hosts:
-    driver: "host"
+  host:
+    driver: bridge

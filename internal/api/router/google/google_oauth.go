@@ -1,7 +1,7 @@
 package router 
 
 import (
-	"social_network/internal/api/router"
+	"social_network/internal/api/router/options"
 	"social_network/internal/oauth/google"
 )
 

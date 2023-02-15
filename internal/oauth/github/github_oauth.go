@@ -2,7 +2,7 @@ package github
 
 import (
 	"bytes"
-	 "context"
+	_ "context"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -10,28 +10,36 @@ import (
 	"os"
 
 	"social_network/internal/api/v1"
-	 _ "social_network/internal/config/database"
+	_ "social_network/internal/config/database"
 	model "social_network/internal/oauth/github/model"
-	"social_network/internal/repository/database/postgresql/oauth"
+	_ "social_network/internal/repository/database/postgresql/oauth"
+	"social_network/utils"
 	"social_network/utils/logger"
 )
 
+var rand_state = utils.GenerateRandomString()
+
 func GithubLogin(wrt http.ResponseWriter, req *http.Request) {
 	cliendID := GetGithubClientID()
-	redirectURL := fmt.Sprintf("https://github.com/login/oauth/authorize?client_id=%s&redirect_uri=%s", cliendID, "http://localhost:3000/login/github/callback")
+	redirectURL := fmt.Sprintf("https://github.com/login/oauth/authorize?client_id=%s&redirect_uri=%s&state=%s", cliendID, "http://localhost:3000/login/github/callback", rand_state)
 	http.Redirect(wrt, req, redirectURL, http.StatusMovedPermanently)
 }
 
 func GithubCallback(wrt http.ResponseWriter, req *http.Request) {
-	code := req.URL.Query().Get("code") // get code of url in which is access token
-	githubAccessToken := GetGithubAccessToken(code) // add access token to get user's data 
-	githubData := GetGithubData(githubAccessToken)	// get user's data 
+	state := req.URL.Query().Get("state")
+	code := req.URL.Query().Get("code")             // get code of url in which is access token
+	githubAccessToken := GetGithubAccessToken(code) // add access token to get user's data
+	githubData := GetGithubData(state,githubAccessToken)  // get user's data
 
-	database.CreateGitHubUser(context.Background(), githubData)
+	fmt.Println(githubData)
+	//database.CreateGitHubUser(context.Background(), githubData)
 	v1.Home(wrt, req)
 }
 
-func GetGithubData(accessToken string) model.GitHubUserDataResponse {
+func GetGithubData(state,accessToken string) model.GitHubUserDataResponse {
+	if state!=rand_state{
+		logger.Error("Something went wrong, CSRF Attack may be")
+	}
 	req, err := http.NewRequest("GET", "https://api.github.com/user", nil)
 	if err != nil {
 		logger.Panic("API Request creation failed")

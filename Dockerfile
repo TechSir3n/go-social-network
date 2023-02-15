@@ -1,4 +1,4 @@
-FROM golang:latest AS builder 
+FROM golang:1.18-alpine
 
 WORKDIR /social_network/web/app 
 
@@ -8,8 +8,7 @@ COPY go.sum /social_network/web/app/
 COPY . /social_network/web/app/
 
 RUN go mod download 
-RUN go build -o /main ./cmd/social-network/
 
-EXPOSE 3000 3000
+RUN go build -o /main ./cmd/social-network/
 
 ENTRYPOINT ["/main"]
