@@ -10,42 +10,28 @@ import (
 
 // NOSql redis
 
-var CLRedis = config.InitRedis()
+var CLRedis = config.ConnectRedis()
 
-type AdminRepository interface {
-	GreateAdminPassword(ctx context.Context) error
-	GetAdminPassword(ctx context.Context) (models.Admin, error)
-}
-
-type AdminService struct {
-	AdminRepository AdminRepository
-	Admin           models.Admin
-}
-
-func NewAdminService(admin AdminRepository, model models.Admin) *AdminService {
-	return &AdminService{
-		AdminRepository: admin,
-		Admin:           model,
+type Redis struct {
+	Admin interface {
+		GreateAdminPassword(ctx context.Context, pass string) error
+		GetAdminPassword(ctx context.Context) (models.Admin, error)
 	}
 }
 
-// add special_key for admin into redis 
-func GreateAdminPassword(ctx context.Context, pass string) error {
-	set, err := CLRedis.SetNX(ctx,"SPECIAL_KEY", pass, 10*time.Minute).Result()
+// add special_key for admin into redis
+func (s Redis) GreateAdminPassword(ctx context.Context, pass string) error {
+	_, err := CLRedis.SetNX(ctx, "SPECIAL_KEY", pass, 10*time.Minute).Result()
 	if err != nil {
 		log.Println(err, " :Failed to set special_key into redis, [:ADMIN]")
 		return err
 	}
 
-	if set {
-		log.Println("SUCESS INSERTED")
-	}
-
 	return nil
 }
 
-// get special_key of redis 
-func GetAdminPassword(ctx context.Context) (models.Admin, error) {
+// get special_key of redis
+func (s Redis) GetAdminPassword(ctx context.Context) (models.Admin, error) {
 	get, err := CLRedis.Get(ctx, "SPECIAL_KEY").Result()
 	if err != nil {
 		log.Println(err, " Failed to get special_key,[:ADMIN]")

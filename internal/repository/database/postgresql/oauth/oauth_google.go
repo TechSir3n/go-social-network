@@ -7,28 +7,18 @@ import (
 	"social_network/utils/logger"
 )
 
-type GoogleRepository interface {
-	CreateGoogleUser(ctx context.Context, user google.GoogleContentUser) ([]google.GoogleContentUser, error)
-	GetGoogleUsers(ctx context.Context) ([]GoogleRepository, error)
-	GetGoogleUserByEmail(ctx context.Context) (google.GoogleContentUser, error)
+type Google struct {
+	GoogleUser interface {
+		CreateGoogleUser(ctx context.Context, user google.GoogleContentUser) ([]google.GoogleContentUser, error)
+		GetGoogleUsers(ctx context.Context) ([]google.GoogleContentUser, error)
+		GetGoogleUserByEmail(ctx context.Context) (google.GoogleContentUser, error)
 
-	UpdateGoogleUser(ctx context.Context, user google.GoogleContentUser, name string) error
-	DeleteGoogleUser(ctx context.Context, name string) error
-}
-
-type GoogleUser struct {
-	GoogleRepository GoogleRepository
-	GoogleUser       google.GoogleContentUser
-}
-
-func NewGoogleUser(GoogleRep GoogleRepository, model google.GoogleContentUser) *GoogleUser {
-	return &GoogleUser{
-		GoogleRepository: GoogleRep,
-		GoogleUser:       model,
+		UpdateGoogleUser(ctx context.Context, user google.GoogleContentUser, name string) error
+		DeleteGoogleUser(ctx context.Context, name string) error
 	}
 }
 
-func CreateGoogleUser(ctx context.Context, user google.GoogleContentUser) (google.GoogleContentUser, error) {
+func (s Google) CreateGoogleUser(ctx context.Context, user google.GoogleContentUser) (google.GoogleContentUser, error) {
 	db := config.ConnectDB()
 
 	sqlInsert := `INSERT INTO GoogleContentUser (id,email) 
@@ -43,7 +33,7 @@ func CreateGoogleUser(ctx context.Context, user google.GoogleContentUser) (googl
 	return google.GoogleContentUser{}, err
 }
 
-func GetGoogleUsers(ctx context.Context) ([]google.GoogleContentUser, error) {
+func (s Google) GetGoogleUsers(ctx context.Context) ([]google.GoogleContentUser, error) {
 	var user google.GoogleContentUser
 	db := config.ConnectDB()
 
@@ -66,7 +56,7 @@ func GetGoogleUsers(ctx context.Context) ([]google.GoogleContentUser, error) {
 	return data, nil
 }
 
-func GetGoogleUserByEmail(ctx context.Context, email string) (google.GoogleContentUser, error) {
+func (s Google) GetGoogleUserByEmail(ctx context.Context, email string) (google.GoogleContentUser, error) {
 	var user google.GoogleContentUser
 	db := config.ConnectDB()
 
@@ -80,7 +70,7 @@ func GetGoogleUserByEmail(ctx context.Context, email string) (google.GoogleConte
 	return user, nil
 }
 
-func UpdateGoogleUser(ctx context.Context, user google.GoogleContentUser, name string) error {
+func (s Google) UpdateGoogleUser(ctx context.Context, user google.GoogleContentUser, name string) error {
 	db := config.ConnectDB()
 
 	sqlInsert := `UPDATE GoogleContentUser SET id=$1 WHERE email=$2
@@ -95,7 +85,7 @@ func UpdateGoogleUser(ctx context.Context, user google.GoogleContentUser, name s
 	return nil
 }
 
-func DeleteGoogleUser(ctx context.Context, email string) error {
+func (s Google) DeleteGoogleUser(ctx context.Context, email string) error {
 	db := config.ConnectDB()
 
 	sqlInsert := `DELETE FROM GoogleContentUser WHERE email=$1`

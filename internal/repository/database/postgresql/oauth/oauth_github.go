@@ -7,28 +7,18 @@ import (
 	"social_network/utils/logger"
 )
 
-type GitHubRepository interface {
-	CreateGitHubUser(ctx context.Context, user github.GitHubUserDataResponse) ([]github.GitHubUserDataResponse, error)
-	GetGitHubUsers(ctx context.Context) ([]github.GitHubUserDataResponse, error)
-	GetGitHubUserByName(ctx context.Context) (github.GitHubUserDataResponse, error)
+type GitHub struct {
+	GitHubUser interface {
+		CreateGitHubUser(ctx context.Context, user github.GitHubUserDataResponse) ([]github.GitHubUserDataResponse, error)
+		GetGitHubUsers(ctx context.Context) ([]github.GitHubUserDataResponse, error)
+		GetGitHubUserByName(ctx context.Context) (github.GitHubUserDataResponse, error)
 
-	UpdateGitHubUser(ctx context.Context, user github.GitHubUserDataResponse, name string) error
-	DeleteGitHubUser(ctx context.Context, name string) error
-}
-
-type GitHubUser struct {
-	GitHubRepository GitHubRepository
-	GitHubUser       github.GitHubUserDataResponse
-}
-
-func NewGitHubUser(GitHubRep GitHubRepository, model github.GitHubUserDataResponse) *GitHubUser {
-	return &GitHubUser{
-		GitHubRepository: GitHubRep,
-		GitHubUser:       model,
+		UpdateGitHubUser(ctx context.Context, user github.GitHubUserDataResponse, name string) error
+		DeleteGitHubUser(ctx context.Context, name string) error
 	}
 }
 
-func CreateGitHubUser(ctx context.Context, user github.GitHubUserDataResponse) (github.GitHubUserDataResponse, error) {
+func (s GitHub) CreateGitHubUser(ctx context.Context, user github.GitHubUserDataResponse) (github.GitHubUserDataResponse, error) {
 	db := config.ConnectDB()
 
 	sqlInsert := `INSERT INTO GitHubUserData (name,login,id,location,created_at,updated_at) 
@@ -47,7 +37,7 @@ func CreateGitHubUser(ctx context.Context, user github.GitHubUserDataResponse) (
 	}, nil
 }
 
-func GetGitHubUsers(ctx context.Context) ([]github.GitHubUserDataResponse, error) {
+func (s GitHub) GetGitHubUsers(ctx context.Context) ([]github.GitHubUserDataResponse, error) {
 	var user github.GitHubUserDataResponse
 	db := config.ConnectDB()
 
@@ -70,7 +60,7 @@ func GetGitHubUsers(ctx context.Context) ([]github.GitHubUserDataResponse, error
 	return data, nil
 }
 
-func GetGitHubUserByName(ctx context.Context, name string) (github.GitHubUserDataResponse, error) {
+func (s GitHub) GetGitHubUserByName(ctx context.Context, name string) (github.GitHubUserDataResponse, error) {
 	var user github.GitHubUserDataResponse
 	db := config.ConnectDB()
 
@@ -84,7 +74,7 @@ func GetGitHubUserByName(ctx context.Context, name string) (github.GitHubUserDat
 	return user, nil
 }
 
-func UpdateGitHubUser(ctx context.Context, user github.GitHubUserDataResponse, name string) error {
+func (s GitHub) UpdateGitHubUser(ctx context.Context, user github.GitHubUserDataResponse, name string) error {
 	db := config.ConnectDB()
 
 	sqlInsert := `UPDATE GitHubUserData SET name=$1,login=$2,id=$3,location=$4,updated_at=$5 WHERE name=$6)
@@ -99,7 +89,7 @@ func UpdateGitHubUser(ctx context.Context, user github.GitHubUserDataResponse, n
 	return nil
 }
 
-func DeleteGitHubUser(ctx context.Context, name string) error {
+func (s GitHub) DeleteGitHubUser(ctx context.Context, name string) error {
 	db := config.ConnectDB()
 
 	sqlInsert := `DELETE FROM GitHubUserData WHERE name=$1`

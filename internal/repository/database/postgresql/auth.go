@@ -4,7 +4,6 @@ import (
 	"context"
 	"log"
 	"social_network/internal/api/v1/models"
-	"social_network/internal/config/database"
 	"time"
 
 	_ "github.com/lib/pq"
@@ -13,36 +12,24 @@ import (
 
 // CRUD operations Postgresql
 
-type UserRepository interface {
-	CreateUser(ctx context.Context, user models.User) (models.User, error)
-	ChangeEmailAddress(ctx context.Context) error
+type Postgres struct {
+	User interface {
+		CreateUser(ctx context.Context, user models.User) (models.User, error)
+		ChangeEmailAddress(ctx context.Context) error
 
-	DeleteUser(ctx context.Context, id string) (models.User, error)
+		DeleteUser(ctx context.Context, id string) (models.User, error)
 
-	UpdateUserEmail(ctx context.Context, address string) error
-	UpdateUserName(ctx context.Context) error
-	UpdateUserPassword(ctx context.Context) error
+		UpdateUserEmail(ctx context.Context, address, id_user string) error
+		UpdateUserName(ctx context.Context, email, id_user string) error
+		UpdateUserPassword(ctx context.Context, password, id_user string) error
 
-	GetUser(ctx context.Context) (models.User, error)
-	GetUserByID(ctx context.Context, id string) (models.User, error)
-	GetUserByEmail(ctx context.Context, email string) (models.User, error)
-}
-
-type UserService struct {
-	UserRepository UserRepository
-	User           models.User
-}
-
-func NewUserService(user UserRepository, model models.User) *UserService {
-	return &UserService{
-		UserRepository: user,
-		User:           model,
+		GetUsers(ctx context.Context) ([]models.User, error)
+		GetUserByID(ctx context.Context, id string) (models.User, error)
+		GetUserByEmail(ctx context.Context, email string) (models.User, error)
 	}
 }
 
-func CreateUser(ctx context.Context, user models.User) (models.User, error) {
-	user.DB = config.ConnectDB()
-
+func (s Postgres) CreateUser(ctx context.Context, user models.User) (models.User, error) {
 	user.CreatedAt = time.Now().Format(time.ANSIC)
 	user.UpdatedAt = time.Now().Format(time.ANSIC)
 
@@ -60,9 +47,8 @@ func CreateUser(ctx context.Context, user models.User) (models.User, error) {
 	}, nil
 }
 
-func DeleteUser(ctx context.Context, id string) (models.User, error) {
+func (s Postgres) DeleteUser(ctx context.Context, id string) (models.User, error) {
 	var user models.User
-	user.DB = config.ConnectDB()
 	sqlDelete := `DELETE FROM users WHERE id =$1`
 	_, err := user.DB.Exec(ctx, sqlDelete, id)
 	if err != nil {
@@ -75,10 +61,9 @@ func DeleteUser(ctx context.Context, id string) (models.User, error) {
 	}, nil
 }
 
-func UpdateUserEmail(ctx context.Context, address, id_user string) error {
+func (s Postgres) UpdateUserEmail(ctx context.Context, address, id_user string) error {
 	var user models.User
 	user.UpdatedAt = time.Now().Format(time.ANSIC)
-	user.DB = config.ConnectDB()
 
 	sqlUpdate := `UPDATE users SET updated_at=$1,email=$2 WHERE id=$3`
 	_, err := user.DB.Exec(ctx, sqlUpdate, user.UpdatedAt, address, id_user)
@@ -90,9 +75,8 @@ func UpdateUserEmail(ctx context.Context, address, id_user string) error {
 	return nil
 }
 
-func UpdateUserPassword(ctx context.Context, password, id_user string) error {
+func (s Postgres) UpdateUserPassword(ctx context.Context, password, id_user string) error {
 	var user models.User
-	user.DB = config.ConnectDB()
 	user.UpdatedAt = time.Now().Format(time.ANSIC)
 
 	sqlUpdate := `UPDATE users SET updated_at=$1,password=$2 WHERE id=$3`
@@ -105,9 +89,8 @@ func UpdateUserPassword(ctx context.Context, password, id_user string) error {
 	return nil
 }
 
-func UpdateUserName(ctx context.Context, username, id_user string) error {
+func (s Postgres) UpdateUserName(ctx context.Context, username, id_user string) error {
 	var user models.User
-	user.DB = config.ConnectDB()
 	user.UpdatedAt = time.Now().Format(time.ANSIC)
 	sqlUpdate := `UPDATE users SET updated_at=$1,name=$2 WHERE id=$3`
 	_, err := user.DB.Exec(ctx, sqlUpdate, user.UpdatedAt, username, id_user)

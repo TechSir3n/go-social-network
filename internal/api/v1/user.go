@@ -5,7 +5,6 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/pkg/errors"
 	"net/http"
-	"social_network/internal/repository/database/postgresql"
 	"social_network/utils"
 )
 
@@ -32,7 +31,7 @@ func UpdateUserName(wrt http.ResponseWriter, req *http.Request, name string) {
 	if req.Method == http.MethodPost {
 		id_user := req.FormValue("search")
 		ctx := context.Background()
-		err := database.UpdateUserName(ctx, name, id_user)
+		err := db.User.UpdateUserName(ctx, name, id_user)
 		if err != nil {
 			errors.Wrap(err, " :FAILED to update username")
 			return
@@ -44,7 +43,7 @@ func UpdateUserPassword(wrt http.ResponseWriter, req *http.Request, password str
 	if req.Method == http.MethodPost {
 		id_user := req.FormValue("search")
 		ctx := context.Background()
-		err := database.UpdateUserPassword(ctx, password, id_user)
+		err := db.User.UpdateUserPassword(ctx, password, id_user)
 		if err != nil {
 			errors.Wrap(err, " :FAILED to update password")
 			return
@@ -57,7 +56,7 @@ func UpdateUserEmail(wrt http.ResponseWriter, req *http.Request, email string) {
 	if req.Method == http.MethodPost {
 		id_user := req.FormValue("")
 		ctx := context.Background()
-		err := database.UpdateUserEmail(ctx, email, id_user)
+		err := db.User.UpdateUserEmail(ctx, email, id_user)
 		if err != nil {
 			errors.Wrap(err, " :FAILED to update email")
 			return

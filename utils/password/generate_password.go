@@ -4,7 +4,7 @@ import (
 	"context"
 	"log"
 
-	redis "social_network/internal/repository/database/redis"
+ "social_network/internal/repository/database/redis"
 
 	"github.com/sethvargo/go-password/password"
 	"gopkg.in/robfig/cron.v2"
@@ -14,6 +14,7 @@ import (
 // generate a random special key of 5 characters and 5 numbers, 
 // which will be known only to the administrator
 func GeneratePassword() (string, error) {
+	var redis database.Redis
 	res, err := password.Generate(10, 5, 5, false, false)
 	if err != nil {
 		log.Fatal(err)
@@ -21,7 +22,7 @@ func GeneratePassword() (string, error) {
 	}
 
 	ctx := context.Background()
-	err = redis.GreateAdminPassword(ctx, res)
+	err = redis.Admin.GreateAdminPassword(ctx, res)
 	if err != nil {
 		log.Println(err, ":Failed to create admin password")
 		return "", err

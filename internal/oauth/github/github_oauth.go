@@ -2,7 +2,7 @@ package github
 
 import (
 	"bytes"
-	_ "context"
+	 "context"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -12,7 +12,7 @@ import (
 	"social_network/internal/api/v1"
 	_ "social_network/internal/config/database"
 	model "social_network/internal/oauth/github/model"
-	_ "social_network/internal/repository/database/postgresql/oauth"
+	oauth "social_network/internal/repository/database/postgresql/oauth"
 	"social_network/utils"
 	"social_network/utils/logger"
 )
@@ -31,8 +31,8 @@ func GithubCallback(wrt http.ResponseWriter, req *http.Request) {
 	githubAccessToken := GetGithubAccessToken(code) // add access token to get user's data
 	githubData := GetGithubData(state,githubAccessToken)  // get user's data
 
-	fmt.Println(githubData)
-	//database.CreateGitHubUser(context.Background(), githubData)
+	var github oauth.GitHub
+	github.GitHubUser.CreateGitHubUser(context.Background(), githubData)
 	v1.Home(wrt, req)
 }
 
@@ -60,6 +60,7 @@ func GetGithubData(state,accessToken string) model.GitHubUserDataResponse {
 	if err != nil {
 		logger.Fatal("Failed umarshal body into structure", err.Error())
 	}
+	
 
 	return data
 }

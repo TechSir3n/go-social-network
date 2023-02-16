@@ -29,5 +29,6 @@ docker-run:
 dep:
 	go mod download
 
+.PHONY: clean
 clean:
 	rm $(BUILD)

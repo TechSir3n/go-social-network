@@ -8,7 +8,7 @@ import (
 	"social_network/utils/logger"
 )
 
-func InitRedis() *redis.Client {
+func ConnectRedis() *redis.Client {
 	rd := redis.NewClient(&redis.Options{
 		Addr:     os.Getenv("REDIS_DSN"),
 		Password: "",

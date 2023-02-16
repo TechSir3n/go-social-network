@@ -5,12 +5,10 @@ import (
 	"github.com/pkg/errors"
 	"log"
 	"social_network/internal/api/v1/models"
-	"social_network/internal/config/database"
 )
 
-func GetUsers(ctx context.Context) ([]models.User, error) {
+func (s Postgres) GetUsers(ctx context.Context) ([]models.User, error) {
 	var user models.User
-	user.DB = config.ConnectDB()
 	rows, err := user.DB.Query(ctx, "SELECT id,email,name FROM users")
 	if err != nil {
 		errors.Wrap(err, "Failed to get some data from the database")
@@ -37,9 +35,8 @@ func GetUsers(ctx context.Context) ([]models.User, error) {
 	return data, nil
 }
 
-func GetUserByID(ctx context.Context, id string) (models.User, error) {
+func (s Postgres) GetUserByID(ctx context.Context, id string) (models.User, error) {
 	var user models.User
-	user.DB = config.ConnectDB()
 	rows, err := user.DB.Query(ctx, "SELECT id,email,name FROM users WHERE id=$1", id)
 
 	if err != nil {
@@ -65,9 +62,8 @@ func GetUserByID(ctx context.Context, id string) (models.User, error) {
 	}, nil
 }
 
-func GetUserByEmail(ctx context.Context, email string) (models.User, error) {
+func (s Postgres) GetUserByEmail(ctx context.Context, email string) (models.User, error) {
 	var user models.User
-	user.DB = config.ConnectDB()
 	rows, err := user.DB.Query(ctx, "SELECT id,email,password,name FROM users WHERE email = $1", email)
 	if err != nil {
 		log.Fatal(err)

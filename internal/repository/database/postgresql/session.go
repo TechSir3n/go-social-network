@@ -7,8 +7,9 @@ import (
 	"social_network/internal/pkg/jwt"
 )
 
+var db = config.ConnectDB()
+
 func CreateSessions(ctx context.Context, payload *jwt.PayloadJWT) error {
-	db := config.ConnectDB()
 	insertSession := `INSERT INTO session (expiresrefresh,refreshuid,refreshtoken)
 					VALUES($1,$2,$3)`
 
@@ -23,7 +24,6 @@ func CreateSessions(ctx context.Context, payload *jwt.PayloadJWT) error {
 }
 
 func UpdateSessions(ctx context.Context, payload *jwt.PayloadJWT) error {
-	db := config.ConnectDB()
 	insertSession := `UPDATE session (expiresrefresh,refreshuid,refreshtoken)
 					VALUES($1,$2,$3)`
 

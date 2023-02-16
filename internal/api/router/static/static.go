@@ -7,6 +7,7 @@ import (
 
 func init() {
 	// i used absolute path because the other one didn't work
+
 	access_css := http.FileServer(http.Dir("C:/Users/Ruslan/Desktop/go-social-network/static/access/css/"))
 	access_js := http.FileServer(http.Dir("C:/Users/Ruslan/Desktop/go-social-network/static/access/js/"))
 

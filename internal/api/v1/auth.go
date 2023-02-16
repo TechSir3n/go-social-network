@@ -2,9 +2,9 @@ package v1
 
 import (
 	"context"
+	"github.com/pkg/errors"
 	"log"
 	"net/http"
-	"github.com/pkg/errors"
 
 	"social_network/internal/api/v1/models"
 	session "social_network/internal/domain/v2"
@@ -17,6 +17,8 @@ import (
 	"social_network/utils/logger"
 	valid "social_network/utils/validator"
 )
+
+var db database.Postgres
 
 func Login(wrt http.ResponseWriter, req *http.Request) {
 	wrt.Header().Set("Content-Type", "text/html; charset=utf-8")
@@ -36,7 +38,8 @@ func Login(wrt http.ResponseWriter, req *http.Request) {
 		user_cached, err := memcached.GetMemcached("credentials")
 		//  if the user is still in the cache, then he will be cured from there otherwise from the database
 		if err != nil {
-			user_db, err := database.GetUserByEmail(ctx, email)
+
+			user_db, err := db.User.GetUserByEmail(ctx, email)
 			if err != nil {
 				wrt.WriteHeader(http.StatusNotFound)
 				log.Println(err, " :User not found")
@@ -137,7 +140,7 @@ func SignUp(wrt http.ResponseWriter, req *http.Request) {
 		}
 
 		ctx := context.Background()
-		id_user, err := database.CreateUser(ctx, user)
+		id_user, err := db.User.CreateUser(ctx, user)
 
 		if err != nil {
 			utils.ExecTemplate(wrt, "C:/Users/Ruslan/Desktop/go-social-network/static/access/html/signup.html", err)
@@ -168,7 +171,7 @@ func VerifyEmail(wrt http.ResponseWriter, req *http.Request) {
 		}
 
 		ctx := context.Background()
-		_, err := database.GetUserByEmail(ctx, email)
+		_, err := db.User.GetUserByEmail(ctx, email)
 		if err != nil {
 			http.Error(wrt, "User not found", http.StatusBadRequest)
 			log.Println(err, "Failed to found user with so email address")
@@ -200,7 +203,7 @@ func ResetPassword(wrt http.ResponseWriter, req *http.Request) {
 		}
 
 		ctx := context.Background()
-		err = database.UpdateUserPassword(ctx, user.Password, "2")
+		err = db.User.UpdateUserPassword(ctx, user.Password, "2")
 		if err != nil {
 			log.Println(err, " :Failed to update user password")
 			return
@@ -220,8 +223,9 @@ func AccessAdmin(wrt http.ResponseWriter, req *http.Request) {
 			return
 		}
 
+		var redis redis.Redis
 		ctx := context.Background()
-		admin, err := redis.GetAdminPassword(ctx)
+		admin, err := redis.Admin.GetAdminPassword(ctx)
 		if err != nil {
 			errors.Wrap(err, " Unable get :[ADMIN]")
 			return

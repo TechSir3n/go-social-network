@@ -4,7 +4,6 @@ import (
 	 "context"
 
 	"net/http"
-	"social_network/internal/repository/database/postgresql"
 	_ "social_network/internal/socket"
 	"social_network/utils"
 	"social_network/utils/logger"
@@ -23,7 +22,7 @@ func Profile(wrt http.ResponseWriter, req *http.Request) {
 func Message(wrt http.ResponseWriter, req *http.Request) {
 
 	user := req.FormValue("search_name")
-	users, err := database.GetUsers(context.Background())
+	users, err := db.User.GetUsers(context.Background())
 	if err != nil {
 		logger.Error(err.Error())
 	}

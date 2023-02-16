@@ -8,7 +8,6 @@ import (
 	"net/http"
 	"strings"
 
-	"social_network/internal/repository/database/postgresql"
 	"social_network/utils"
 )
 
@@ -43,14 +42,14 @@ func GetUser(wrt http.ResponseWriter, req *http.Request, txt string) {
 		by_user := req.FormValue("search")
 		ctx := context.Background()
 		if strings.HasPrefix(txt, "by_id_get") {
-			user_data, err := database.GetUserByID(ctx, by_user)
+			user_data, err := db.User.GetUserByID(ctx, by_user)
 			if err != nil {
 				errors.Wrap(err, " :FAILED to get user by id")
 				return
 			}
 			utils.ExecTemplate(wrt, "C:/Users/Ruslan/Desktop/go-social-network/static/admin/html/show_users.html", user_data.Email)
 		} else if strings.HasPrefix(txt, "by_email_get") {
-			user_data, err := database.GetUserByEmail(ctx, by_user)
+			user_data, err := db.User.GetUserByEmail(ctx, by_user)
 			if err != nil {
 				errors.Wrap(err, " :FAILED to get user by id")
 				return
@@ -67,7 +66,7 @@ func DeleteUser(wrt http.ResponseWriter, req *http.Request) {
 	if req.Method == http.MethodDelete {
 		id_user := req.FormValue("search")
 		ctx := context.Background()
-		_, err := database.DeleteUser(ctx, id_user)
+		_, err := db.User.DeleteUser(ctx, id_user)
 		if err != nil {
 			errors.Wrap(err, " :FAILED to delete user")
 			return
@@ -78,7 +77,7 @@ func DeleteUser(wrt http.ResponseWriter, req *http.Request) {
 func GetAllUsers(wrt http.ResponseWriter, req *http.Request) {
 	if req.Method == http.MethodPost {
 		ctx := context.Background()
-		users, err := database.GetUsers(ctx)
+		users, err := db.User.GetUsers(ctx)
 		if err != nil {
 			errors.Wrap(err, " :FAILED to get users")
 			return

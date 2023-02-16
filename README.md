@@ -1,6 +1,5 @@
 # Small Social Network 
 
-[![Go 20.0] (https://img.shields.io/badge/Go-20.0-blue)
 
 # [Images (must-view) ⬇️]
 
@@ -69,10 +68,10 @@ make run
 
 ## Logs
 ```yaml
-[INFO]: 12002-212-212 212:212:212 - [database connected successfully]
 [ERROR]: 12002-212-212 212:212:212 - [state is not valid]
 [INFO]: 12002-212-212 212:212:212 - [database connected successfully]
 [ERROR]: 12002-212-212 212:212:212 - [someting went wrong,Mb its CRSF Attack]
+[FATAL]: 16002-216-216 216:216:216 - [listen tcp :3000: bind: Only one usage of each socket address (protocol/network address/port) is normally permitted.]
 ```
 
 # Images
