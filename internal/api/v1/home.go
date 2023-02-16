@@ -1,12 +1,12 @@
 package v1
 
 import (
-	 "context"
+	 _ "context"
 
 	"net/http"
 	_ "social_network/internal/socket"
 	"social_network/utils"
-	"social_network/utils/logger"
+	_ 	"social_network/utils/logger"
 )
 
 func Home(wrt http.ResponseWriter, req *http.Request) {
@@ -21,8 +21,9 @@ func Profile(wrt http.ResponseWriter, req *http.Request) {
 
 func Message(wrt http.ResponseWriter, req *http.Request) {
 
+	/*
 	user := req.FormValue("search_name")
-	users, err := db.User.GetUsers(context.Background())
+	users, err := db.GetUsers(context.Background())
 	if err != nil {
 		logger.Error(err.Error())
 	}
@@ -32,6 +33,7 @@ func Message(wrt http.ResponseWriter, req *http.Request) {
 			// id = exists.ID 
 		}
 	}
+	*/
 
 	http.ServeFile(wrt, req, "C:/Users/Ruslan/Desktop/go-social-network/static/home/html/message.html")
 }

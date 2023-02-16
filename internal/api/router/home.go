@@ -1,6 +1,7 @@
 package router
 
 import (
+	"fmt"
 	"net/http"
 	"social_network/internal/api/router/options"
 	"social_network/internal/api/v1"
@@ -14,7 +15,9 @@ func init() {
 	go hub.Run()
 
 	router.APIRouter.HandleFunc("/ws", v1.Authentication(func(wrt http.ResponseWriter, req *http.Request) {
-		socket.UpgradeWS(hub, wrt, req)
+		id := req.URL.Query().Get("id")
+		client := socket.NewClient(id, hub, wrt, req)
+		client.Hub.Register <- client
+		fmt.Println("Client:", client.ID)
 	}))
-
 }

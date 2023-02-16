@@ -38,8 +38,7 @@ func Login(wrt http.ResponseWriter, req *http.Request) {
 		user_cached, err := memcached.GetMemcached("credentials")
 		//  if the user is still in the cache, then he will be cured from there otherwise from the database
 		if err != nil {
-
-			user_db, err := db.User.GetUserByEmail(ctx, email)
+			user_db, err := db.GetUserByEmail(ctx, email)
 			if err != nil {
 				wrt.WriteHeader(http.StatusNotFound)
 				log.Println(err, " :User not found")
@@ -140,7 +139,8 @@ func SignUp(wrt http.ResponseWriter, req *http.Request) {
 		}
 
 		ctx := context.Background()
-		id_user, err := db.User.CreateUser(ctx, user)
+	
+		id_user, err :=	db.CreateUser(ctx,user)
 
 		if err != nil {
 			utils.ExecTemplate(wrt, "C:/Users/Ruslan/Desktop/go-social-network/static/access/html/signup.html", err)
@@ -203,7 +203,7 @@ func ResetPassword(wrt http.ResponseWriter, req *http.Request) {
 		}
 
 		ctx := context.Background()
-		err = db.User.UpdateUserPassword(ctx, user.Password, "2")
+		err = db.UpdateUserPassword(ctx, user.Password, "2")
 		if err != nil {
 			log.Println(err, " :Failed to update user password")
 			return
@@ -225,7 +225,7 @@ func AccessAdmin(wrt http.ResponseWriter, req *http.Request) {
 
 		var redis redis.Redis
 		ctx := context.Background()
-		admin, err := redis.Admin.GetAdminPassword(ctx)
+		admin, err := redis.GetAdminPassword(ctx)
 		if err != nil {
 			errors.Wrap(err, " Unable get :[ADMIN]")
 			return

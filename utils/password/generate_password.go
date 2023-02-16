@@ -22,7 +22,7 @@ func GeneratePassword() (string, error) {
 	}
 
 	ctx := context.Background()
-	err = redis.Admin.GreateAdminPassword(ctx, res)
+	err = redis.GreateAdminPassword(ctx, res)
 	if err != nil {
 		log.Println(err, ":Failed to create admin password")
 		return "", err

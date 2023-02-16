@@ -62,6 +62,10 @@ func Panic(args ...interface{}) {
 	Logger.Panic(args)
 }
 
+func Str(txt string,args ...interface{}){
+	Logger.Print(txt,args)
+}
+
 func WithContext(ctx context.Context) {
 	Logger.WithContext(ctx)
 }

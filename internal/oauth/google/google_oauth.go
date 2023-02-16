@@ -48,7 +48,7 @@ func CallBackGoogle(wrt http.ResponseWriter, req *http.Request) {
 	}
 
 	var gl database.Google
-	_, err = gl.GoogleUser.CreateGoogleUser(context.Background(), user)
+	_, err = gl.CreateGoogleUser(context.Background(), user)
 	if err != nil {
 		logger.Fatal(err.Error(), "Failed to create google's user")
 	}

@@ -1,49 +1,62 @@
 package socket
 
-
+import (
+	"math/rand"
+	"time"
+)
 
 type Hub struct {
-	register   chan *Client     // for new connection
-	unregister chan *Client     // for disconnection
-	clients    map[*Client]bool //  view all clientsи
-	broadcast  chan []byte
+	ID         int32
+	Register   chan *Client     // for new connection
+	Unregister chan *Client     // for disconnection
+	Clients    map[*Client]bool //  view all clientsи
+	Broadcast  chan *Message
+}
+
+type Message struct {
+	Message  string `json:"message"`
+	Type     string `json:"type"`
+	ClientID string `json:"client_id"`
 }
 
 func NewHub() *Hub {
-	return &Hub{
-		register:   make(chan *Client),
-		unregister: make(chan *Client),
-		clients:    make(map[*Client]bool),
-		broadcast:  make(chan []byte),
+	rand.Seed(time.Now().UnixNano())
+	hub := &Hub{
+		ID:         rand.Int31(),
+		Register:   make(chan *Client),
+		Unregister: make(chan *Client),
+		Clients:    make(map[*Client]bool),
+		Broadcast:  make(chan *Message),
 	}
+	return hub
 }
 
 func (h *Hub) Run() {
 	for {
 		select {
-		case client := <-h.register:
-			h.clients[client] = true
-			for client, _ := range h.clients {
-				client.conn.WriteJSON("New User Connected")
+		case client := <-h.Register:
+			h.Clients[client] = true
+			for client, _ := range h.Clients {
+				client.Conn.WriteJSON("New User Connected")
 			}
 
-		case client := <-h.unregister:
-			if _, ok := h.clients[client]; ok {
-				delete(h.clients, client)
-				close(client.send)
+		case client := <-h.Unregister:
+			if _, ok := h.Clients[client]; ok {
+				delete(h.Clients, client)
+				close(client.Send)
 			}
 
-			for client, _ := range h.clients {
-				client.conn.WriteJSON("User Disconnected")
+			for client, _ := range h.Clients {
+				client.Conn.WriteJSON("User Disconnected")
 			}
-			
-		case message := <-h.broadcast:
-			for client := range h.clients {
+
+		case message := <-h.Broadcast:
+			for client := range h.Clients {
 				select {
-				case client.send <- message:
+				case client.Send <- message:
 				default:
-					close(client.send)
-					delete(h.clients, client)
+					close(client.Send)
+					delete(h.Clients, client)
 				}
 			}
 

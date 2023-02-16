@@ -1,7 +1,7 @@
 # Small Social Network 
 
 
-# [Images (must-view) ⬇️]
+# [Images (must-view) ⬇️](https://github.com/Kl1ck9r/go-social-network/tree/main/screenshots)
 
 ---
 # Requirements
@@ -66,26 +66,26 @@ make build
 make run 
 ```
 
-## Logs
-```yaml
-[ERROR]: 12002-212-212 212:212:212 - [state is not valid]
-[INFO]: 12002-212-212 212:212:212 - [database connected successfully]
-[ERROR]: 12002-212-212 212:212:212 - [someting went wrong,Mb its CRSF Attack]
-[FATAL]: 16002-216-216 216:216:216 - [listen tcp :3000: bind: Only one usage of each socket address (protocol/network address/port) is normally permitted.]
+## Setup Postgresql 
+```shell
+
 ```
 
-# Images
+### Down 
+```shell
 
-![image](https://github.com/Kl1ck9r/go-social-network/blob/develop/login.png) 
-![image](https://github.com/Kl1ck9r/go-social-network/blob/develop/keys.png)
-![image](https://github.com/Kl1ck9r/go-social-network/blob/develop/registration.png)
-![image](https://github.com/Kl1ck9r/go-social-network/blob/develop/google.png)
----
+```
 
-## Forgot password? Wait for mail
+## Run arguments 
+```shell
+  server -http # or https
+```
 
-## You must verify your mail:
-![image](https://github.com/Kl1ck9r/go-social-network/blob/develop/verify.png)
-
-## Then Reset
-![image](https://github.com/Kl1ck9r/go-social-network/blob/develop/reset.png)
+## Logs
+```yaml
+[ERROR]: 16002-216-216 216:216:216 - [memcache: cache miss Failed to get value of the memcached]
+[INFO]: 12002-212-212 212:212:212 - [database connected successfully]
+[INFO]: 16002-216-216 216:216:216 - protocol[http method GET path /favicon.ico Duration  769.2µs Status Code  200 Status text OK]
+[INFO]: 16002-216-216 216:216:216 - protocol[http method GET path /login Duration  512.6µs Status Code  200 Status text OK]
+[FATAL]: 16002-216-216 216:216:216 - [listen tcp :3000: bind: Only one usage of each socket address (protocol/network address/port) is normally permitted.]
+```

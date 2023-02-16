@@ -32,7 +32,7 @@ func GithubCallback(wrt http.ResponseWriter, req *http.Request) {
 	githubData := GetGithubData(state,githubAccessToken)  // get user's data
 
 	var github oauth.GitHub
-	github.GitHubUser.CreateGitHubUser(context.Background(), githubData)
+	github.CreateGitHubUser(context.Background(), githubData)
 	v1.Home(wrt, req)
 }
 

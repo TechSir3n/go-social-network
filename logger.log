@@ -1,3 +1,0 @@
-[INFO]: 16002-216-216 216:216:216 - [Database connected successfully]
-[INFO]: 16002-216-216 216:216:216 - [Database connected successfully]
-[FATAL]: 16002-216-216 216:216:216 - [listen tcp :3000: bind: Only one usage of each socket address (protocol/network address/port) is normally permitted.]

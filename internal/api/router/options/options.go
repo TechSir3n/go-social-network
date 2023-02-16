@@ -5,7 +5,7 @@ import (
 	"net/http"
 )
 
-var APIRouter = mux.NewRouter().Schemes("http").Subrouter().StrictSlash(true)
+var APIRouter = mux.NewRouter().StrictSlash(true)
 
 func init() {
 	APIRouter.Methods("OPTIONS").HandlerFunc(func(wrt http.ResponseWriter, req *http.Request) {

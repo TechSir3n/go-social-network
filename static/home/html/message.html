@@ -1,51 +1,87 @@
-<!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
-  <meta charset="utf-8">
+  <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <link rel="icon" href="data:;base64,=">
-  <link rel="stylesheet" type="text/css" href="../css1/message.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="../css1/message.css">
+  <title>Web socks</title>
 </head>
 
+<body style="width: 40%; margin:auto; padding-top:50px;">
+  <main class="msger-chat">
+    <ul id="body" style="list-style-type: none;">
+      <p id="connect">not connected</p>
 
-<body>
-  <form method="POST" action="/user/message">
+    </ul>
+    <form id="form2">
+      <input type="submit" class="button-id" value="connect" />
+      <input type="text" placeholder="enter id" class="input-id" id="mfsg" autofocus />
+    </form>
+    </p>
+    <form style="display: none" id="form" class="msger-inputarea">
+      <input type="submit" class="msger-send-btn" value="Send" />
+      <input type="text" class="msger-input" id="msg" autofocus />
 
-    <div class="search_user">
-      <label for="some-input">Search Users</label>
-      <input type="text" id="some-input" name="search_name" placeholder="Enter Username">
-      <button>Search</button>
-    </div>
+    </form>
+  </main>
+</body>
+<script>
+  function connectChat(idd) {
+    var id = "henry"
+    webSocket = new WebSocket(`ws://localhost:3000/ws?id=${idd}`);
 
-    <div class="chat-popup" id="myForm">
-      <h1>Chat</h1>
-
-      <input type="text" id="input">
-      <pre id="output"></pre>
-      <button onclick="send()" class="btn">Send</button>
-    </div>
-  </form>
-  <script>
-    var input = document.getElementById("input");
-    var output = document.getElementById("output");
-    var socket = new WebSocket("ws://localhost:3000/ws");
-
-    socket.onopen = function () {
-      output.innerHTML += "Status: Connected\n";
-    };
-
-    socket.onmessage = function (e) {
-      output.innerHTML += "Server: " + e.data + "\n";
-    };
-
-    function send() {
-      socket.send(input.value);
-      input.value = "";
+    webSocket.onopen = function (evt) {
+      console.log(evt)
+      document.getElementById("connect").innerText = `connected to chat with id: ${idd}`
+      document.getElementById("form2").style = "display: none"
+      document.getElementById("form").style = "display: visible"
     }
 
-  </script>
-</body>
+    webSocket.onclose = function (evt) {
+      webSocket = null
+    }
+    webSocket.onmessage = function (evt) {
+      var body = document.getElementById("body")
+      var list = document.createElement("li")
+
+      console.log(evt)
+      var obj = JSON.parse(evt.data);
+
+      console.log(obj)
+      if (obj.client_id == idd) {
+        list.classList.add("messages")
+      } else {
+        list.classList.add("messages2")
+      }
+
+      list.innerHTML = obj.message
+
+      body.appendChild(list)
+
+    }
+    webSocket.onerror = function (evt) {
+
+    }
+  }
+
+  document.getElementById("form").onsubmit = function () {
+    if (!webSocket) {
+      return false;
+    }
+    if (!msg.value) {
+      return false;
+    }
+    webSocket.send(msg.value);
+    msg.value = "";
+    return false;
+  };
+  document.getElementById("form2").onsubmit = function (evt) {
+    evt.preventDefault()
+    console.log(evt)
+    connectChat(mfsg.value)
+  };
+
+</script>
 
 </html>
