@@ -1,7 +1,7 @@
 # Small Social Network 
 
 
-# [Images (must-view) ⬇️](https://github.com/Kl1ck9r/go-social-network/tree/main/screenshots)
+# [Images (must-view)](https://github.com/Kl1ck9r/go-social-network/tree/main/screenshots)
 
 ---
 # Requirements
@@ -65,24 +65,38 @@ cd social-network
 make build
 make run 
 ```
-
-## Setup Postgresql 
-```shell
-
-```
-
-### Down 
-```shell
-
-```
-
 ## Run arguments 
 ```shell
   server -http # or https
 ```
 
+---
+## Setup Postgresql 
+```shell
+migrate -database ${POSTGRESQL_URL} -path migrate/ up
+```
+
+### Down 
+```shell
+migrate -database ${POSTGRESQL_URL} -path migrate/ down
+```
+---
+
+## Tests
+* [x] Mocks
+* [x] Unit 
+* [ ] Integration - soon
+* [] System - soon
+
+```shell
+make test 
+```
+
+---
+
 ## Logs
 ```yaml
+# File (default logger.txt)
 [ERROR]: 16002-216-216 216:216:216 - [memcache: cache miss Failed to get value of the memcached]
 [INFO]: 12002-212-212 212:212:212 - [database connected successfully]
 [INFO]: 16002-216-216 216:216:216 - protocol[http method GET path /favicon.ico Duration  769.2µs Status Code  200 Status text OK]

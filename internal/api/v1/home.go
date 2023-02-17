@@ -1,8 +1,6 @@
 package v1
 
 import (
-	 _ "context"
-
 	"net/http"
 	_ "social_network/internal/socket"
 	"social_network/utils"
@@ -20,20 +18,6 @@ func Profile(wrt http.ResponseWriter, req *http.Request) {
 }
 
 func Message(wrt http.ResponseWriter, req *http.Request) {
-
-	/*
-	user := req.FormValue("search_name")
-	users, err := db.GetUsers(context.Background())
-	if err != nil {
-		logger.Error(err.Error())
-	}
-
-	for _, exists := range users {
-		if exists.Name == user {
-			// id = exists.ID 
-		}
-	}
-	*/
 
 	http.ServeFile(wrt, req, "C:/Users/Ruslan/Desktop/go-social-network/static/home/html/message.html")
 }

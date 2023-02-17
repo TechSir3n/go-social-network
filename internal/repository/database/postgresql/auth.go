@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 	"social_network/internal/api/v1/models"
+	config "social_network/internal/config/database"
 	"time"
 
 	_ "github.com/lib/pq"
@@ -32,6 +33,7 @@ type Postgres struct {
 func (s Postgres) CreateUser(ctx context.Context, user models.User) (models.User, error) {
 	user.CreatedAt = time.Now().Format(time.ANSIC)
 	user.UpdatedAt = time.Now().Format(time.ANSIC)
+	user.DB = config.ConnectDB()
 
 	sqlInsert := `INSERT INTO users (email,password,name,confirm_password,created_at,updated_at) 
     VALUES ($1,$2,$3,$4,$5,$6)`
@@ -49,6 +51,7 @@ func (s Postgres) CreateUser(ctx context.Context, user models.User) (models.User
 
 func (s Postgres) DeleteUser(ctx context.Context, id string) (models.User, error) {
 	var user models.User
+	user.DB = config.ConnectDB()
 	sqlDelete := `DELETE FROM users WHERE id =$1`
 	_, err := user.DB.Exec(ctx, sqlDelete, id)
 	if err != nil {
@@ -64,7 +67,7 @@ func (s Postgres) DeleteUser(ctx context.Context, id string) (models.User, error
 func (s Postgres) UpdateUserEmail(ctx context.Context, address, id_user string) error {
 	var user models.User
 	user.UpdatedAt = time.Now().Format(time.ANSIC)
-
+	user.DB = config.ConnectDB()
 	sqlUpdate := `UPDATE users SET updated_at=$1,email=$2 WHERE id=$3`
 	_, err := user.DB.Exec(ctx, sqlUpdate, user.UpdatedAt, address, id_user)
 	if err != nil {
@@ -78,7 +81,7 @@ func (s Postgres) UpdateUserEmail(ctx context.Context, address, id_user string) 
 func (s Postgres) UpdateUserPassword(ctx context.Context, password, id_user string) error {
 	var user models.User
 	user.UpdatedAt = time.Now().Format(time.ANSIC)
-
+	user.DB = config.ConnectDB()
 	sqlUpdate := `UPDATE users SET updated_at=$1,password=$2 WHERE id=$3`
 	_, err := user.DB.Exec(ctx, sqlUpdate, user.UpdatedAt, password, id_user)
 	if err != nil {
@@ -91,6 +94,7 @@ func (s Postgres) UpdateUserPassword(ctx context.Context, password, id_user stri
 
 func (s Postgres) UpdateUserName(ctx context.Context, username, id_user string) error {
 	var user models.User
+	user.DB = config.ConnectDB()
 	user.UpdatedAt = time.Now().Format(time.ANSIC)
 	sqlUpdate := `UPDATE users SET updated_at=$1,name=$2 WHERE id=$3`
 	_, err := user.DB.Exec(ctx, sqlUpdate, user.UpdatedAt, username, id_user)

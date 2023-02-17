@@ -38,7 +38,7 @@ func Logging(handler http.Handler) http.Handler {
 		}
 
 		handler.ServeHTTP(wrt, req)
-		duration := time.Since(start_time) // to calculate the duretion of work
+		duration := time.Since(start_time) // to calculate the duration of work
 
 		if rec.StatusCode != http.StatusOK {
 			logger.Error("Body", rec.Body)

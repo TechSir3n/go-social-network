@@ -4,9 +4,11 @@ all: clean build run
 
 build:
 	go build -o $(BUILD) $(BUILD)/
+	
 
 run: 
 	go run $(BUILD)/main.go
+
 
 .PHONY: compose
 compose: compose-down
@@ -22,12 +24,16 @@ compose-down:
 docker-build:
 	docker build -t social-network .
 
+
 .PHONY: docker-run 
 docker-run:
 	docker run social-network 
 
-dep:
-	go mod download
+
+.PHONY: test
+test:
+	go test -v
+
 
 .PHONY: clean
 clean:

@@ -141,7 +141,6 @@ func SignUp(wrt http.ResponseWriter, req *http.Request) {
 		ctx := context.Background()
 	
 		id_user, err :=	db.CreateUser(ctx,user)
-
 		if err != nil {
 			utils.ExecTemplate(wrt, "C:/Users/Ruslan/Desktop/go-social-network/static/access/html/signup.html", err)
 			return
