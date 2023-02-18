@@ -7,6 +7,10 @@ import (
 	"net/http"
 )
 
+const (
+	Path = "C:/Users/Ruslan/Desktop/go-social-network/static"
+)
+
 func ExecTemplate(w http.ResponseWriter, template string, data interface{}) {
 	t, err := templ.ParseFiles(template)
 	if err != nil {

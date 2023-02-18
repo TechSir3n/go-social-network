@@ -5,7 +5,6 @@ all: clean build run
 build:
 	go build -o $(BUILD) $(BUILD)/
 	
-
 run: 
 	go run $(BUILD)/main.go
 
@@ -32,7 +31,10 @@ docker-run:
 
 .PHONY: test
 test:
-	go test -v
+	go test ./...
+
+.PHONY: mod
+	go mod download 
 
 
 .PHONY: clean

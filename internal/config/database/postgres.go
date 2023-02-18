@@ -1,12 +1,13 @@
 package config
 
 import (
-	"fmt"
 	"context"
-	"github.com/jackc/pgx/v5"
-	"github.com/joho/godotenv"
+	"fmt"
 	"os"
 	"social_network/utils/logger"
+
+	"github.com/jackc/pgx/v5"
+	"github.com/joho/godotenv"
 )
 
 func init() {
@@ -21,7 +22,7 @@ func ConnectDB() *pgx.Conn {
 	dbname := os.Getenv("DB_NAME")
 	port := os.Getenv("DB_PORT")
 	username := os.Getenv("DB_USER")
-
+	
 	psqlInfo := fmt.Sprintf("host=%s port=%s user=%s "+
 		"password=%s dbname=%s sslmode=disable",
 		host, port, username, password, dbname)

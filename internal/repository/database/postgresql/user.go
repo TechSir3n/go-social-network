@@ -2,13 +2,16 @@ package database
 
 import (
 	"context"
-	"github.com/pkg/errors"
 	"log"
 	"social_network/internal/api/v1/models"
+	config "social_network/internal/config/database"
+
+	"github.com/pkg/errors"
 )
 
 func (s Postgres) GetUsers(ctx context.Context) ([]models.User, error) {
 	var user models.User
+	user.DB = config.ConnectDB()
 	rows, err := user.DB.Query(ctx, "SELECT id,email,name FROM users")
 	if err != nil {
 		errors.Wrap(err, "Failed to get some data from the database")
@@ -37,6 +40,7 @@ func (s Postgres) GetUsers(ctx context.Context) ([]models.User, error) {
 
 func (s Postgres) GetUserByID(ctx context.Context, id string) (models.User, error) {
 	var user models.User
+	user.DB = config.ConnectDB()
 	rows, err := user.DB.Query(ctx, "SELECT id,email,name FROM users WHERE id=$1", id)
 
 	if err != nil {
@@ -64,6 +68,7 @@ func (s Postgres) GetUserByID(ctx context.Context, id string) (models.User, erro
 
 func (s Postgres) GetUserByEmail(ctx context.Context, email string) (models.User, error) {
 	var user models.User
+	user.DB = config.ConnectDB()
 	rows, err := user.DB.Query(ctx, "SELECT id,email,password,name FROM users WHERE email = $1", email)
 	if err != nil {
 		log.Fatal(err)
@@ -78,8 +83,8 @@ func (s Postgres) GetUserByEmail(ctx context.Context, email string) (models.User
 	}
 
 	return models.User{
-		ID:       user.ID,
-		Name:     user.Name,
-		Email:    user.Email,
+		ID:    user.ID,
+		Name:  user.Name,
+		Email: user.Email,
 	}, nil
 }

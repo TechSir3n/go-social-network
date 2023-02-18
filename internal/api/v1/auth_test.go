@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"social_network/internal/api/v1/models"
-	
 	"testing"
 )
 
@@ -18,10 +17,10 @@ func TestLogin(t *testing.T) {
 
 	res := httptest.NewRecorder()
 	handler := http.HandlerFunc(Login)
-
-	defer res.Result().Body.Close()
+	
 
 	handler.ServeHTTP(res, req)
+	defer res.Result().Body.Close()
 
 	if status := res.Code; status != http.StatusOK {
 		t.Errorf("handler returned wrong status code: got %v want %v",
@@ -45,6 +44,7 @@ func TestSignUp(t *testing.T) {
 	handler := http.HandlerFunc(SignUp)
 
 	handler.ServeHTTP(res, req)
+	defer res.Result().Body.Close()
 
 	if status := res.Code; status != http.StatusOK {
 		t.Errorf("handler returned wrong status code: got %v want %v",
@@ -74,6 +74,7 @@ func TestVerifyEmail(t *testing.T) {
 	handler := http.HandlerFunc(VerifyEmail)
 
 	handler.ServeHTTP(res, req)
+	defer res.Result().Body.Close()
 
 	if status := res.Code; status != http.StatusOK {
 		t.Errorf("handler returned wrong status code: got %v want %v",
@@ -91,6 +92,7 @@ func TestResetPassword(t *testing.T) {
 	handler := http.HandlerFunc(ResetPassword)
 
 	handler.ServeHTTP(res, req)
+	defer res.Result().Body.Close()
 
 	if status := res.Code; status != http.StatusOK {
 		t.Errorf("handler returned wrong status code: got %v want %v",
@@ -108,7 +110,8 @@ func TestAccessAdmin(t *testing.T) {
 	handler := http.HandlerFunc(AccessAdmin)
 
 	handler.ServeHTTP(res, req)
-
+	defer res.Result().Body.Close()
+	
 	if status := res.Code; status != http.StatusOK {
 		t.Errorf("handler returned wrong status code: got %v want %v",
 			status, http.StatusOK)

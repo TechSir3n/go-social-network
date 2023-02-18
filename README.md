@@ -85,8 +85,6 @@ migrate -database ${POSTGRESQL_URL} -path migrate/ down
 ## Tests
 * [x] Mocks
 * [x] Unit 
-* [ ] Integration - soon
-* [] System - soon
 
 ```shell
 make test 
