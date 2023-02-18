@@ -34,7 +34,7 @@ test:
 	go test ./...
 
 .PHONY: mod
-	go mod download 
+mod:	go mod download 
 
 
 .PHONY: clean
