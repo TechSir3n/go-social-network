@@ -8,5 +8,5 @@ import (
 func init(){
 	router.APIRouter.HandleFunc("/login/github",github.GithubLogin)
 
-	router.APIRouter.HandleFunc("/login/github/callback",github.GithubCallback)
+	router.APIRouter.HandleFunc("/github/callback",github.GithubCallback)
 }

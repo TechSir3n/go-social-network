@@ -101,3 +101,24 @@ make test
 [INFO]: 16002-216-216 216:216:216 - protocol[http method GET path /login Duration  512.6µs Status Code  200 Status text OK]
 [FATAL]: 16002-216-216 216:216:216 - [listen tcp :3000: bind: Only one usage of each socket address (protocol/network address/port) is normally permitted.]
 ```
+
+
+## Endpoints
+
+### - Main Page `/home`
+
+### - Register  `/registration`
+
+### - Login `/login`
+
+### - Logout `/logout`
+
+### - Mail verify `/verify`
+
+### - Reset Password `/reset/password`
+
+### - Access Admin `/access/admin`
+
+#### - Github OAuth `/login/github`  `/github/callback` 
+
+#### - Google OAuth `/login/google`  `/google/callback` 

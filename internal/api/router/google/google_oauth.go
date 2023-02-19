@@ -6,7 +6,7 @@ import (
 )
 
 func init(){
-	router.APIRouter.HandleFunc("/google/login",google.LoginGoogle)
+	router.APIRouter.HandleFunc("/login/google",google.LoginGoogle)
 
 	router.APIRouter.HandleFunc("/google/callback",google.CallBackGoogle)
 }
