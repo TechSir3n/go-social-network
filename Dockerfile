@@ -12,8 +12,7 @@ ADD go.mod .
 ADD go.sum .
 RUN go mod download
 COPY . .
-RUN go build -ldflags="-s -w" -o /app/main ./cmd/social-network/main.go
-
+RUN GOOS=linux  go build -a -installsuffix cgo  -ldflags="-s -w" -o /app/main ./cmd/social-network/main.go
 
 FROM scratch
 
@@ -24,4 +23,4 @@ ENV TZ Asia/Shanghai
 WORKDIR /app
 COPY --from=builder /app/main /app/main
 
-CMD ["./main"]
+ENTRYPOINT ["./main"]

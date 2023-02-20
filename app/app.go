@@ -1,7 +1,7 @@
 package app
 
 import (
-	"context"
+	 "context"
 	"flag"
 	"fmt"
 	"net/http"
@@ -15,7 +15,7 @@ import (
 	_ "social_network/internal/api/router/request"
 	_ "social_network/internal/api/router/static"
 	"social_network/internal/api/v1/middleware"
-	sql "social_network/internal/config/database"
+	sql  "social_network/internal/config/database"
 	"social_network/utils/logger"
 	"social_network/utils/password"
 )
@@ -46,7 +46,7 @@ func Start() {
 		fmt.Println("No Command line: ", arg)
 	}
 	
-	// http or https 
+	//http or https 
 	if *HTTP {
 		logger.Fatal(srv.ListenAndServe())
 	} else {

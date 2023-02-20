@@ -26,7 +26,7 @@ docker-build:
 
 .PHONY: docker-run 
 docker-run:
-	docker run social-network 
+	docker run  -d social-network 
 
 
 .PHONY: test

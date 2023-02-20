@@ -7,7 +7,7 @@ import (
 	"social_network/internal/api/v1/models"
 	"social_network/utils/logger"
 
-	"github.com/dgrijalva/jwt-go"
+	"github.com/golang-jwt/jwt/v4"
 	"github.com/twinj/uuid"
 )
 

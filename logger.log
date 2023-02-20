@@ -1,0 +1,3 @@
+[ERROR]: 20002-220-220 220:220:220 - [failed to connect to `host=port= user=password= database=sslmode=disable`: hostname resolving error (lookup port=: no such host) : Unable to connect database]
+[INFO]: 20002-220-220 220:220:220 - [Database connected successfully]
+[FATAL]: 20002-220-220 220:220:220 - [dial tcp :0: connectex: The requested address is not valid in its context. Unable connect to memcaced]

@@ -1,6 +1,6 @@
 package jwt
 
-import "github.com/dgrijalva/jwt-go"
+import 	"github.com/golang-jwt/jwt/v4"
 
 type PayloadJWT struct {	 // it's custom paylod in jwt token
 	Email          string `json:"Email"`
